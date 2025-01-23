@@ -50,7 +50,7 @@ The **Recommendation Engine** is based on a content-based filtering approach tha
     ```bash
     streamlit run main.py
     ```
-
+```
 ## Project Structure
 
 recommendation-system/
@@ -65,4 +65,4 @@ recommendation-system/
 ├── main.py                          # Streamlit app for the front end
 ├── requirements.txt                 # Python dependencies for the project
 └── README.md                        # Project overview, setup instructions, etc.
-
+```
