@@ -16,6 +16,7 @@ class RecommendationEngine:
                                       self.data['Scent'] + " " +
                                       self.data['Effectiveness'])
         self.data.fillna("", inplace=True)
+        self.data['Cached Summary'] = self.data['Reviews'].apply(self.get_review_summary)  # Precompute summaries
         self.cosine_sim = self.create_tfidf_matrix(self.data)
         self.summarizer = self.load_summarizer()
 
@@ -24,9 +25,9 @@ class RecommendationEngine:
         return pipeline("summarization", model="facebook/bart-large-cnn", device=device)
 
     def create_tfidf_matrix(self, _data):
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+        vectorizer = TfidfVectorizer(stop_words='english', max_features=2000)
         tfidf_matrix = vectorizer.fit_transform(_data['Combined Text'])
-        svd = TruncatedSVD(n_components=100)
+        svd = TruncatedSVD(n_components=50)
         reduced_matrix = svd.fit_transform(tfidf_matrix)
         return cosine_similarity(reduced_matrix, reduced_matrix)
 
@@ -34,11 +35,12 @@ class RecommendationEngine:
         if not review_text or len(review_text.strip()) < 50:
             return "No detailed review available."
         try:
-            summary = self.summarizer(review_text[:max_length],
-                                    max_length=100,
-                                    min_length=30,
-                                    do_sample=False,
-                                    num_beams=1)
+            summary = self.load_summarizer()(
+                review_text[:max_length],
+                max_length=50,
+                min_length=10,
+                do_sample=False
+            )
             return summary[0]['summary_text']
         except Exception:
             return "Summary generation failed."
@@ -61,7 +63,7 @@ class RecommendationEngine:
 
             recommended_products = self.data.iloc[product_indices]
 
-            summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
+            summaries = recommended_products['Cached Summary'].tolist()  # Use precomputed summaries
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -72,7 +74,7 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
-        
+
     def get_product_based_recommendations(self, selected_product, top_n=20):
         try:
             if selected_product not in self.data['Product Name'].values:
@@ -85,7 +87,7 @@ class RecommendationEngine:
 
             recommended_products = self.data.iloc[product_indices]
 
-            summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
+            summaries = recommended_products['Cached Summary'].tolist()  # Use precomputed summaries
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -96,6 +98,3 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
-
-    
-    

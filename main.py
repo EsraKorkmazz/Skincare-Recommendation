@@ -4,7 +4,12 @@ from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 
+@st.cache_resource
+def load_recommendation_engine(data_path):
+    return RecommendationEngine(data_path)
+
 data_path = "data/final_data_cleaned.csv"
+recommendation_engine = load_recommendation_engine(data_path)
 
 data = pd.read_csv(data_path)
 data.fillna("", inplace=True)
@@ -72,11 +77,11 @@ elif selected == "Recommendation":
         
     if st.button("Get Recommendations :sparkles:"):
         with st.spinner("Fetching recommendations..."):
+            recommendation_engine = RecommendationEngine(data_path)
             filtered_products = data[
                 (data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)) &
                 (data['Scent'].str.contains(scent, case=False, na=False) | (scent == 'All'))
             ]
-
             if filtered_products.empty:
                 st.warning("No products found matching your criteria. Please try different preferences.")
             else:
@@ -87,10 +92,7 @@ elif selected == "Recommendation":
                 progress_bar.progress(25)
                 
                 sample_product = filtered_products.iloc[0]['Product Name']
-                recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = RecommendationEngine.get_content_based_recommendations(
-                    sample_product, skin_type, scent, top_n=40
-                )
-                
+                recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(sample_product, skin_type, scent, top_n=40)
                 progress_bar.progress(75)
                 status_text.text("Preparing display...")
 
@@ -120,8 +122,9 @@ elif selected == "Product Based Recommendation":
     selected_product = st.selectbox("Select a product", data['Product Name'])
     
     if st.button("Get Recommendations :sparkles:"):
+        recommendation_engine = RecommendationEngine(data_path)
         with st.spinner("Fetching recommendations..."):
-            recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = RecommendationEngine.get_product_based_recommendations(selected_product, top_n=40)
+            recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_product_based_recommendations(selected_product, top_n=20)
             
             if not recommended_names:
                 st.warning("No recommendations found for this product.")
