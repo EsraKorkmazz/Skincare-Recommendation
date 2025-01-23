@@ -4,7 +4,7 @@ from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 
-data_path = "/Users/esra/Desktop/esra-proje/Skincare-Recommendation/data/final_data_cleaned.csv"
+data_path = "data/final_data_cleaned.csv"
 
 data = pd.read_csv(data_path)
 data.fillna("", inplace=True)
