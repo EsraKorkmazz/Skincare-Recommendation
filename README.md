@@ -62,8 +62,8 @@ recommendation-system/
   ├── 2.png                     # Image for the Home section
   ├── 3.jpg                     # Image for the Home section
 
-├── recommendation_model.py          # Recommendation engine logic and methods
-├── main.py                          # Streamlit app for the front end
-├── requirements.txt                 # Python dependencies for the project
-├── README.md                        # Project overview, setup instructions, etc.
+├── recommendation_model.py     # Recommendation engine logic and methods
+├── main.py                     # Streamlit app for the front end
+├── requirements.txt            # Python dependencies for the project
+├── README.md                   # Project overview, setup instructions, etc.
 ```
