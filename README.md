@@ -53,4 +53,16 @@ The **Recommendation Engine** is based on a content-based filtering approach tha
 
 ## Project Structure
 
-skincare-product-recommendation-engine/ │ ├── data/ # Folder for your data files │ ├── final_data_cleaned.csv # Cleaned dataset for the recommendations │ ├── images/ # Folder for images used in the web interface │ ├── 2.png │ ├── 3.jpg │ ├── recommendation_model.py # Recommendation engine logic (Content-based filtering) ├── main.py # Streamlit app to interact with users ├── requirements.txt # List of dependencies to run the app └── README.md # Project overview
+recommendation-system/
+├── data/
+│   └── final_data_cleaned.csv        # Cleaned dataset used by the recommendation model
+│
+├── images/
+│   ├── 2.png                        # Image for the Home section
+│   ├── 3.jpg                        # Image for the Home section
+│
+├── recommendation_model.py          # Recommendation engine logic and methods
+├── main.py                          # Streamlit app for the front end
+├── requirements.txt                 # Python dependencies for the project
+└── README.md                        # Project overview, setup instructions, etc.
+
