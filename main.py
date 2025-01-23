@@ -4,6 +4,12 @@ from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 
+# Session state for recommendations
+if 'recommendation_batch' not in st.session_state:
+    st.session_state.recommendation_batch = 0
+    st.session_state.total_recommendations = []
+
+
 @st.cache_resource
 def load_recommendation_engine(data_path):
     return RecommendationEngine(data_path)
@@ -63,7 +69,6 @@ if selected == "Home":
     st.image("images/2.png", width=1000)
     st.write("### Let’s dive into the essentials of skincare!")
 
-
 elif selected == "Recommendation":
     st.title("Skincare Product Recommendation")
     st.write("Please select your preferences to get personalized skincare product recommendations.")
@@ -76,8 +81,10 @@ elif selected == "Recommendation":
     scent = st.selectbox("Select scent preference", ['Light', 'Strong', 'All'])
         
     if st.button("Get Recommendations :sparkles:"):
+        st.session_state.recommendation_batch = 0
+        st.session_state.total_recommendations = []
+
         with st.spinner("Fetching recommendations..."):
-            recommendation_engine = RecommendationEngine(data_path)
             filtered_products = data[
                 (data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)) &
                 (data['Scent'].str.contains(scent, case=False, na=False) | (scent == 'All'))
@@ -85,36 +92,44 @@ elif selected == "Recommendation":
             if filtered_products.empty:
                 st.warning("No products found matching your criteria. Please try different preferences.")
             else:
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                status_text.text("Getting initial recommendations...")
-                progress_bar.progress(25)
-                
                 sample_product = filtered_products.iloc[0]['Product Name']
                 recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(sample_product, skin_type, scent, top_n=40)
-                progress_bar.progress(75)
-                status_text.text("Preparing display...")
-
-                BATCH_SIZE = 3
-                for i in range(0, len(recommended_names), BATCH_SIZE):
-                    cols = st.columns(min(BATCH_SIZE, len(recommended_names) - i))
-                    
-                    for j, col in enumerate(cols):
-                        idx = i + j
-                        if idx < len(recommended_names):
-                            with col:
-                                st.markdown(f"**{recommended_brands[idx]}**")
-                                st.image(recommended_images[idx], 
-                                    caption=recommended_names[idx], 
-                                    use_container_width=True)
-                                with st.expander("What customers say about this product"):
-                                    st.write(f"Ease of Use: {recommended_ease_of_use[idx]}")
-                                    st.write(f"Summary: {recommended_summaries[idx]}")
-                                    st.write(f"[View Product]({recommended_links[idx]})")
                 
-                progress_bar.progress(100)
-                status_text.empty()
+                st.session_state.total_recommendations = list(zip(
+                    recommended_names, 
+                    recommended_brands, 
+                    recommended_images, 
+                    recommended_links, 
+                    recommended_ease_of_use, 
+                    recommended_summaries
+                ))
+
+    if st.session_state.total_recommendations:
+        BATCH_SIZE = 3
+        current_batch = st.session_state.total_recommendations[
+            st.session_state.recommendation_batch:st.session_state.recommendation_batch + BATCH_SIZE
+        ]
+
+        cols = st.columns(min(BATCH_SIZE, len(current_batch)))
+        
+        for j, col in enumerate(cols):
+            if j < len(current_batch):
+                with col:
+                    name, brand, image, link, ease_of_use, summary = current_batch[j]
+                    st.markdown(f"**{brand}**")
+                    st.image(image, 
+                        caption=name, 
+                        use_container_width=True)
+                    with st.expander("What customers say about this product"):
+                        st.write(f"Ease of Use: {ease_of_use}")
+                        st.write(f"Summary: {summary}")
+                        st.write(f"[View Product]({link})")
+
+        if st.session_state.recommendation_batch + BATCH_SIZE < len(st.session_state.total_recommendations):
+            if st.button("Load More Recommendations"):
+                st.session_state.recommendation_batch += BATCH_SIZE
+                st.experimental_rerun()
+
 elif selected == "Product Based Recommendation":
     st.title("Product Based Recommendation")
     st.write("Please select a product to get recommendations based on that product.")
@@ -122,38 +137,49 @@ elif selected == "Product Based Recommendation":
     selected_product = st.selectbox("Select a product", data['Product Name'])
     
     if st.button("Get Recommendations :sparkles:"):
-        recommendation_engine = RecommendationEngine(data_path)
+        st.session_state.recommendation_batch = 0
+        st.session_state.total_recommendations = []
+
         with st.spinner("Fetching recommendations..."):
             recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_product_based_recommendations(selected_product, top_n=20)
             
             if not recommended_names:
                 st.warning("No recommendations found for this product.")
             else:
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                
-                status_text.text("Preparing display...")
-                progress_bar.progress(25)
-                
-                BATCH_SIZE = 3
-                for i in range(0, len(recommended_names), BATCH_SIZE):
-                    cols = st.columns(min(BATCH_SIZE, len(recommended_names) - i))
-                    
-                    for j, col in enumerate(cols):
-                        idx = i + j
-                        if idx < len(recommended_names):
-                            with col:
-                                st.markdown(f"**{recommended_brands[idx]}**")
-                                st.image(recommended_images[idx], 
-                                    caption=recommended_names[idx], 
-                                    use_container_width=True)
-                                with st.expander("What customers say about this product"):
-                                    st.write(f"Ease of Use: {recommended_ease_of_use[idx]}")
-                                    st.write(f"Summary: {recommended_summaries[idx]}")
-                                    st.write(f"[View Product]({recommended_links[idx]})")
-                
-                progress_bar.progress(100)
-                status_text.empty()
+                st.session_state.total_recommendations = list(zip(
+                    recommended_names, 
+                    recommended_brands, 
+                    recommended_images, 
+                    recommended_links, 
+                    recommended_ease_of_use, 
+                    recommended_summaries
+                ))
+
+    if st.session_state.total_recommendations:
+        BATCH_SIZE = 3
+        current_batch = st.session_state.total_recommendations[
+            st.session_state.recommendation_batch:st.session_state.recommendation_batch + BATCH_SIZE
+        ]
+
+        cols = st.columns(min(BATCH_SIZE, len(current_batch)))
+        
+        for j, col in enumerate(cols):
+            if j < len(current_batch):
+                with col:
+                    name, brand, image, link, ease_of_use, summary = current_batch[j]
+                    st.markdown(f"**{brand}**")
+                    st.image(image, 
+                        caption=name, 
+                        use_container_width=True)
+                    with st.expander("What customers say about this product"):
+                        st.write(f"Ease of Use: {ease_of_use}")
+                        st.write(f"Summary: {summary}")
+                        st.write(f"[View Product]({link})")
+
+        if st.session_state.recommendation_batch + BATCH_SIZE < len(st.session_state.total_recommendations):
+            if st.button("Load More Recommendations"):
+                st.session_state.recommendation_batch += BATCH_SIZE
+                st.experimental_rerun()
 
 elif selected == "About":
-    st.write("For More Information\n" + "https://github.com/EsraKorkmazz/skincare-product-recommendation-engine")  
+    st.write("For More Information\n" + "https://github.com/EsraKorkmazz/skincare-product-recommendation-engine")
