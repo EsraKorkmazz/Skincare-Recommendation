@@ -37,8 +37,8 @@ class RecommendationEngine:
         try:
             summary = self.load_summarizer()(
                 review_text[:max_length],
-                max_length=50,
-                min_length=10,
+                max_length=90,
+                min_length=30,
                 do_sample=False
             )
             return summary[0]['summary_text']
