@@ -130,7 +130,6 @@ elif selected == "Product Based Recommendation":
             if not recommended_names:
                 st.warning("No recommendations found for this product.")
             else:
-                # Remove duplicates based on product names
                 unique_indices = []
                 seen = set()
 
@@ -139,7 +138,6 @@ elif selected == "Product Based Recommendation":
                         seen.add(name)
                         unique_indices.append(idx)
 
-                # Filter lists to keep only unique products
                 recommended_names = [recommended_names[i] for i in unique_indices]
                 recommended_brands = [recommended_brands[i] for i in unique_indices]
                 recommended_images = [recommended_images[i] for i in unique_indices]
@@ -147,7 +145,6 @@ elif selected == "Product Based Recommendation":
                 recommended_ease_of_use = [recommended_ease_of_use[i] for i in unique_indices]
                 recommended_summaries = [recommended_summaries[i] for i in unique_indices]
 
-                # Show progress bar
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
