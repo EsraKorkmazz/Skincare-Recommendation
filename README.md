@@ -2,7 +2,7 @@
 
 Welcome to the **Skincare Product Recommendation Engine**, a personalized skincare assistant designed to help you find the perfect skincare products tailored to your unique skin needs and preferences.
 
-## Key Features
+## 📌Key Features
 
 - **Tailored Skin Care Routine**: Get personalized product recommendations based on your specific skin concerns and goals.
 - **Skin Type Analysis**: Identify your skin type and receive expert advice on the best products suited for you.
@@ -13,7 +13,7 @@ Welcome to the **Skincare Product Recommendation Engine**, a personalized skinca
 
 [Link](https://com)
 
-## Technologies Used
+## 🛠️Technologies Used
 
 - **Python**
 - **Streamlit** for interactive web interface.
@@ -59,23 +59,18 @@ The **Recommendation Engine** is based on a content-based filtering approach tha
 └── README.md               # This file
 
 ## Project Structure
+📂 Project Structure
 
 recommendation-system/
+
 ├── data/
-
-│   └── final_data_cleaned.csv   # Cleaned dataset used by the recommendation model
-
-│
-
+   └── final_data_cleaned.csv   # Cleaned dataset used by the recommendation model
 ├── images/
+  ├── 2.png                     # Image for the Home section
+  ├── 3.jpg                     # Image for the Home section
 
-│   ├── 2.png                        # Image for the Home section
-
-│   ├── 3.jpg                        # Image for the Home section
-
-│
 ├── recommendation_model.py          # Recommendation engine logic and methods
 ├── main.py                          # Streamlit app for the front end
 ├── requirements.txt                 # Python dependencies for the project
-└── README.md                        # Project overview, setup instructions, etc.
+├── README.md                        # Project overview, setup instructions, etc.
 
