@@ -50,16 +50,29 @@ The **Recommendation Engine** is based on a content-based filtering approach tha
     ```bash
     streamlit run main.py
     ```
+├── tmdb-api.ipynb          # Notebook for TMDB API integration
+├── content_base.py         # Content-based recommendation logic
+├── genre.py                # Genre-based recommendation logic
+├── llmbased.py             # LLM-based recommendation logic
+├── app.py                  # Main Streamlit app
+├── top_100.csv             # Movie dataset used for recommendations
+└── README.md               # This file
 
 ## Project Structure
 
 recommendation-system/
 ├── data/
-│   └── final_data_cleaned.csv        # Cleaned dataset used by the recommendation model
+
+│   └── final_data_cleaned.csv   # Cleaned dataset used by the recommendation model
+
 │
+
 ├── images/
+
 │   ├── 2.png                        # Image for the Home section
+
 │   ├── 3.jpg                        # Image for the Home section
+
 │
 ├── recommendation_model.py          # Recommendation engine logic and methods
 ├── main.py                          # Streamlit app for the front end
