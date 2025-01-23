@@ -25,7 +25,7 @@ class RecommendationEngine:
         return pipeline("summarization", model="facebook/bart-large-cnn", device=device)
 
     def create_tfidf_matrix(self, _data):
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=2000)
+        vectorizer = TfidfVectorizer(stop_words='english', max_features=2000, ngram_range=(1, 3))
         tfidf_matrix = vectorizer.fit_transform(_data['Combined Text'])
         svd = TruncatedSVD(n_components=50)
         reduced_matrix = svd.fit_transform(tfidf_matrix)
@@ -35,12 +35,13 @@ class RecommendationEngine:
         if not review_text or len(review_text.strip()) < 50:
             return "No detailed review available."
         try:
-            summary = self.load_summarizer()(
-                review_text[:max_length],
-                max_length=90,
+            max_len = min(100, max(30, len(review_text.split()) // 2))
+            summary = self.summarizer(
+                review_text,
+                max_length=max_len,
                 min_length=30,
                 do_sample=False
-            )
+        )
             return summary[0]['summary_text']
         except Exception:
             return "Summary generation failed."
@@ -84,6 +85,8 @@ class RecommendationEngine:
             sim_scores = [(i, self.cosine_sim[idx][i]) for i in range(len(self.data))]
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[:top_n]
             product_indices = [i[0] for i in sim_scores]
+
+            recommended_products = self.data.iloc[product_indices].drop_duplicates(subset='Product Name')
 
             recommended_products = self.data.iloc[product_indices]
 
