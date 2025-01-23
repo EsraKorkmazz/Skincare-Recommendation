@@ -16,7 +16,7 @@ class RecommendationEngine:
                                       self.data['Scent'] + " " +
                                       self.data['Effectiveness'])
         self.data.fillna("", inplace=True)
-        self.data['Cached Summary'] = self.data['Reviews'].apply(self.get_review_summary)  # Precompute summaries
+        self.data['Cached Summary'] = self.data['Reviews'].apply(self.get_review_summary)
         self.cosine_sim = self.create_tfidf_matrix(self.data)
         self.summarizer = self.load_summarizer()
 
@@ -63,7 +63,7 @@ class RecommendationEngine:
 
             recommended_products = self.data.iloc[product_indices]
 
-            summaries = recommended_products['Cached Summary'].tolist()  # Use precomputed summaries
+            summaries = recommended_products['Cached Summary'].tolist()
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -87,7 +87,7 @@ class RecommendationEngine:
 
             recommended_products = self.data.iloc[product_indices]
 
-            summaries = recommended_products['Cached Summary'].tolist()  # Use precomputed summaries
+            summaries = recommended_products['Cached Summary'].tolist()
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),

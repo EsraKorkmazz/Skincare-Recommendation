@@ -4,18 +4,15 @@ from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 
-# Session state for recommendations
 if 'recommendation_batch' not in st.session_state:
     st.session_state.recommendation_batch = 0
     st.session_state.total_recommendations = []
 
-
-@st.cache_resource
 def load_recommendation_engine(data_path):
     return RecommendationEngine(data_path)
 
 data_path = "data/final_data_cleaned.csv"
-recommendation_engine = load_recommendation_engine(data_path)
+recommendation_engine = RecommendationEngine(data_path)
 
 data = pd.read_csv(data_path)
 data.fillna("", inplace=True)
