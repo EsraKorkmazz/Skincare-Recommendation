@@ -22,7 +22,7 @@ class RecommendationEngine:
 
     def load_summarizer(self):
         device = 0 if torch.cuda.is_available() else -1
-        return pipeline("summarization", model="facebook/bart-large-cnn", device=device)
+        return pipeline("summarization", model="facebook/bart-base", device=device)
 
     def create_tfidf_matrix(self, _data):
         vectorizer = TfidfVectorizer(stop_words='english', max_features=2000, ngram_range=(1, 3))
@@ -32,8 +32,8 @@ class RecommendationEngine:
         return cosine_similarity(reduced_matrix, reduced_matrix)
 
     def get_review_summary(self, review_text, max_length=128):
-        if not review_text or len(review_text.strip()) < 50:
-            return "No detailed review available."
+        if len(review_text) > 1000:
+            review_text = review_text[:1000]
         try:
             max_len = min(100, max(30, len(review_text.split()) // 2))
             summary = self.summarizer(
