@@ -87,7 +87,7 @@ elif selected == "Recommendation":
                 progress_bar.progress(25)
                 
                 sample_product = filtered_products.iloc[0]['Product Name']
-                recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = engine.get_content_based_recommendations(
+                recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = RecommendationEngine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40
                 )
                 
@@ -121,7 +121,7 @@ elif selected == "Product Based Recommendation":
     
     if st.button("Get Recommendations :sparkles:"):
         with st.spinner("Fetching recommendations..."):
-            recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = engine.get_product_based_recommendations(selected_product, top_n=40)
+            recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = RecommendationEngine.get_product_based_recommendations(selected_product, top_n=40)
             
             if not recommended_names:
                 st.warning("No recommendations found for this product.")
