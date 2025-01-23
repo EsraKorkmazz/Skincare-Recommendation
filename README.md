@@ -52,7 +52,7 @@ The **Recommendation Engine** is based on a content-based filtering approach tha
     ```
 
 ```
-## 📂Project Structure
+📂Project Structure
 
 recommendation-system/
 
