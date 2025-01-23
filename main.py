@@ -53,9 +53,9 @@ if selected == "Home":
     - **Expert-backed Guidance**: Benefit from advice that combines scientific knowledge, dermatological research, and real user experiences.
     """)
 
-    st.image("/Users/esra/Desktop/ulta2/recommendation-system/images/3.jpg", width=1000)
+    st.image("images/3.jpg", width=1000)
     st.write("### While my skincare recommendation engine helps match you with the right products, this section is dedicated to sharing practical skincare tips. From building a morning routine to evening care, these tips are designed to help you achieve healthy, glowing skin.")
-    st.image("/Users/esra/Desktop/ulta2/recommendation-system/images/2.png", width=1000)
+    st.image("images/2.png", width=1000)
     st.write("### Let’s dive into the essentials of skincare!")
 
 
