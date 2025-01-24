@@ -3,7 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from transformers import pipeline
 import pandas as pd
-import torch
+#import torch
 from sklearn.decomposition import TruncatedSVD
 
 class RecommendationEngine:
@@ -21,8 +21,13 @@ class RecommendationEngine:
         self.summarizer = self.load_summarizer()
 
     def load_summarizer(self):
-        device = 0 if torch.cuda.is_available() else -1
-        return pipeline("summarization", model="facebook/bart-base", device=device)
+        st.write("Summarization pipeline loaded using TensorFlow.")
+        return pipeline("summarization", model="facebook/bart-base", framework="tf")
+
+    #def load_summarizer(self):
+        #device = 0 if torch.cuda.is_available() else -1
+        #st.write(f"Summarization pipeline loaded on {'GPU' if device == 0 else 'CPU'}.")
+        #return pipeline("summarization", model="facebook/bart-base", device=device)
 
     def create_tfidf_matrix(self, _data):
         vectorizer = TfidfVectorizer(stop_words='english', max_features=2000, ngram_range=(1, 3))
