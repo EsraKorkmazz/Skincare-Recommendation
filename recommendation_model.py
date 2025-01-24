@@ -3,8 +3,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from transformers import pipeline
 import pandas as pd
-#import torch
+import torch
 from sklearn.decomposition import TruncatedSVD
+import torchvision
 
 class RecommendationEngine:
     def __init__(self, data_path):
@@ -16,23 +17,17 @@ class RecommendationEngine:
                                       self.data['Scent'] + " " +
                                       self.data['Effectiveness'])
         self.data.fillna("", inplace=True)
-        self.data['Cached Summary'] = self.data['Reviews'].apply(self.get_review_summary)
         self.cosine_sim = self.create_tfidf_matrix(self.data)
         self.summarizer = self.load_summarizer()
-
+    
     def load_summarizer(self):
-        st.write("Summarization pipeline loaded using TensorFlow.")
-        return pipeline("summarization", model="facebook/bart-base", framework="tf")
-
-    #def load_summarizer(self):
-        #device = 0 if torch.cuda.is_available() else -1
-        #st.write(f"Summarization pipeline loaded on {'GPU' if device == 0 else 'CPU'}.")
-        #return pipeline("summarization", model="facebook/bart-base", device=device)
+        device = 0 if torch.cuda.is_available() else -1
+        return pipeline("summarization", model="facebook/bart-base", device=device)
 
     def create_tfidf_matrix(self, _data):
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=2000, ngram_range=(1, 3))
+        vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
         tfidf_matrix = vectorizer.fit_transform(_data['Combined Text'])
-        svd = TruncatedSVD(n_components=50)
+        svd = TruncatedSVD(n_components=100)
         reduced_matrix = svd.fit_transform(tfidf_matrix)
         return cosine_similarity(reduced_matrix, reduced_matrix)
 
@@ -40,13 +35,12 @@ class RecommendationEngine:
         if len(review_text) > 1000:
             review_text = review_text[:1000]
         try:
-            max_len = min(100, max(30, len(review_text.split()) // 2))
             summary = self.summarizer(
                 review_text,
-                max_length=max_len,
+                max_length=max_length,
                 min_length=30,
                 do_sample=False
-        )
+            )
             return summary[0]['summary_text']
         except Exception:
             return "Summary generation failed."
@@ -69,7 +63,7 @@ class RecommendationEngine:
 
             recommended_products = self.data.iloc[product_indices]
 
-            summaries = recommended_products['Cached Summary'].tolist()
+            summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -80,7 +74,7 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
-
+        
     def get_product_based_recommendations(self, selected_product, top_n=20):
         try:
             if selected_product not in self.data['Product Name'].values:
@@ -91,11 +85,9 @@ class RecommendationEngine:
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[:top_n]
             product_indices = [i[0] for i in sim_scores]
 
-            recommended_products = self.data.iloc[product_indices].drop_duplicates(subset='Product Name')
-
             recommended_products = self.data.iloc[product_indices]
 
-            summaries = recommended_products['Cached Summary'].tolist()
+            summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -106,3 +98,6 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
+
+    
+    

@@ -2,5 +2,6 @@ streamlit==1.41.1
 pandas==2.2.2
 scikit-learn==1.5.1
 streamlit-option-menu==0.4.0
-transformers==4.48.0
-
+transformers==4.48.1
+torch==2.5.1
+torchvision==0.20.1

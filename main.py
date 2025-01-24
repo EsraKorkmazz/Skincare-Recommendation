@@ -4,14 +4,15 @@ from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 
-def load_recommendation_engine(data_path):
-    return RecommendationEngine(data_path)
-
-data_path = "data/final_data_cleaned.csv"
-recommendation_engine = RecommendationEngine(data_path)
+data_path = "/Users/esra/Desktop/recommendation-system copy/data/final_data_cleaned.csv"
 
 data = pd.read_csv(data_path)
 data.fillna("", inplace=True)
+
+def load_recommendation_engine(data_path):
+    return RecommendationEngine(data_path)
+
+recommendation_engine = load_recommendation_engine(data_path)
 
 selected = option_menu(
     menu_title=None,
@@ -62,6 +63,7 @@ if selected == "Home":
     st.image("images/2.png", width=1000)
     st.write("### Let’s dive into the essentials of skincare!")
 
+
 elif selected == "Recommendation":
     st.title("Skincare Product Recommendation")
     st.write("Please select your preferences to get personalized skincare product recommendations.")
@@ -90,11 +92,9 @@ elif selected == "Recommendation":
                 progress_bar.progress(25)
                 
                 sample_product = filtered_products.iloc[0]['Product Name']
-                try :
-                    recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(
-                    sample_product, skin_type, scent, top_n=40)
-                except Exception as e:
-                    st.error(f"An error occured while fetching recommendations: {str(e)}")
+                recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(
+                    sample_product, skin_type, scent, top_n=40
+                )
                 
                 progress_bar.progress(75)
                 status_text.text("Preparing display...")
@@ -118,7 +118,6 @@ elif selected == "Recommendation":
                 
                 progress_bar.progress(100)
                 status_text.empty()
-
 elif selected == "Product Based Recommendation":
     st.title("Product Based Recommendation")
     st.write("Please select a product to get recommendations based on that product.")
@@ -132,21 +131,6 @@ elif selected == "Product Based Recommendation":
             if not recommended_names:
                 st.warning("No recommendations found for this product.")
             else:
-                unique_indices = []
-                seen = set()
-
-                for idx, name in enumerate(recommended_names):
-                    if name not in seen:
-                        seen.add(name)
-                        unique_indices.append(idx)
-
-                recommended_names = [recommended_names[i] for i in unique_indices]
-                recommended_brands = [recommended_brands[i] for i in unique_indices]
-                recommended_images = [recommended_images[i] for i in unique_indices]
-                recommended_links = [recommended_links[i] for i in unique_indices]
-                recommended_ease_of_use = [recommended_ease_of_use[i] for i in unique_indices]
-                recommended_summaries = [recommended_summaries[i] for i in unique_indices]
-
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
@@ -174,4 +158,4 @@ elif selected == "Product Based Recommendation":
                 status_text.empty()
 
 elif selected == "About":
-    st.write("For More Information\n" + "https://github.com/EsraKorkmazz/skincare-product-recommendation-engine")
+    st.write("For More Information\n" + "https://github.com/EsraKorkmazz/skincare-product-recommendation-engine")  
