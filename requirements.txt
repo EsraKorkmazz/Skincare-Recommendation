@@ -2,5 +2,8 @@ streamlit==1.41.1
 pandas==2.2.2
 scikit-learn==1.5.1
 streamlit-option-menu==0.4.0
-spacy==3.5.0
+spacy==3.0.6
 spacy-streamlit==1.0.6
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm
+en_core_web_sm==3.0.0
+nltk==3.6.2
