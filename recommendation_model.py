@@ -21,8 +21,7 @@ class RecommendationEngine:
         self.summarizer = self.load_summarizer()
     
     def load_summarizer(self):
-        device = 0 if torch.cuda.is_available() else -1
-        return pipeline("summarization", model="facebook/bart-base", device=device)
+        return pipeline("summarization", model="facebook/bart-base", device=-1)
 
     def create_tfidf_matrix(self, _data):
         vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
