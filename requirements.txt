@@ -5,3 +5,5 @@ streamlit-option-menu==0.4.0
 transformers==4.48.1
 torch==2.5.1
 torchvision==0.20.1
+torchaudio==2.5.1
+opencv-python-headless<=4.6.0.66
