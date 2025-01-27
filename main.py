@@ -4,14 +4,13 @@ from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 
-data_path = "data/final_data_cleaned.csv"
+data_path = "/Users/esra/Desktop/recommendation-system copy/data/final_data_cleaned.csv"
 
 data = pd.read_csv(data_path)
 data.fillna("", inplace=True)
 
 def load_recommendation_engine(data_path):
     return RecommendationEngine(data_path)
-
 recommendation_engine = load_recommendation_engine(data_path)
 
 selected = option_menu(
