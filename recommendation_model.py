@@ -17,8 +17,8 @@ class RecommendationEngine:
         self.data.fillna("", inplace=True)
         self.cosine_sim = self.create_tfidf_matrix(self.data)
         self.summarizer = self.load_summarizer()
-    
-    @st.cache(hash_funcs={"MyUnhashableClass": lambda _: None})
+   
+    st.cache_data(hash_funcs={"MyUnhashableClass": lambda _: None})
     def load_summarizer(self):
         return pipeline("summarization", model="facebook/bart-base", device=-1)
 
