@@ -3,9 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from transformers import pipeline
 import pandas as pd
-import torch
 from sklearn.decomposition import TruncatedSVD
-import torchvision
 
 class RecommendationEngine:
     def __init__(self, data_path):
@@ -20,6 +18,7 @@ class RecommendationEngine:
         self.cosine_sim = self.create_tfidf_matrix(self.data)
         self.summarizer = self.load_summarizer()
     
+    @st.cache_resource
     def load_summarizer(self):
         return pipeline("summarization", model="facebook/bart-base", device=-1)
 
