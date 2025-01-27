@@ -83,7 +83,7 @@ class RecommendationEngine:
             product_indices = [i[0] for i in sim_scores]
 
             recommended_products = self.data.iloc[product_indices]
-
+            recommended_products = recommended_products.drop_duplicates(subset='Product Name')
             summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
 
             return (recommended_products['Product Name'].tolist(),
