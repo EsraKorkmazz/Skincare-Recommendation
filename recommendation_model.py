@@ -1,19 +1,19 @@
 import spacy
+import spacy_streamlit
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from streamlit_option_menu import option_menu
 import streamlit as st
 import pandas as pd
-import subprocess
-
-@st.cache_resource
-def download_en_core_web_sm():
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
 
 st.set_page_config(layout="wide")
 
 nlp = spacy.load("en_core_web_sm")
+
+def visualize_spacy_doc(text):
+    spacy_streamlit.visualize(nlp, text)
+
 class RecommendationEngine:
     def __init__(self, data_path):
         self.data = pd.read_csv(data_path)
@@ -38,10 +38,10 @@ class RecommendationEngine:
             review_text = review_text[:1000]
         
         try:
-            doc = download_en_core_web_sm(review_text)
-            sentences = list(doc.sents)
+            # Use spacy_streamlit for doc visualization instead of standard spacy processing
+            visualize_spacy_doc(review_text)  # Visualize the review text with SpaCy
+            sentences = list(nlp(review_text).sents)
             summary = " ".join([str(sentence) for sentence in sentences[:3]])
-            
             return summary
         except Exception as e:
             return "Summary generation failed."
