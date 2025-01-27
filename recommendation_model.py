@@ -5,6 +5,11 @@ from sklearn.decomposition import TruncatedSVD
 from streamlit_option_menu import option_menu
 import streamlit as st
 import pandas as pd
+import subprocess
+
+@st.cache_resource
+def download_en_core_web_sm():
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
 
 st.set_page_config(layout="wide")
 
@@ -33,7 +38,7 @@ class RecommendationEngine:
             review_text = review_text[:1000]
         
         try:
-            doc = nlp(review_text)
+            doc = download_en_core_web_sm(review_text)
             sentences = list(doc.sents)
             summary = " ".join([str(sentence) for sentence in sentences[:3]])
             
