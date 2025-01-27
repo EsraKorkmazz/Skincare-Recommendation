@@ -2,15 +2,14 @@ import streamlit as st
 import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
-st.set_page_config(layout="wide")
 
 data_path = "data/final_data_cleaned.csv"
-
 data = pd.read_csv(data_path)
 data.fillna("", inplace=True)
 
 def load_recommendation_engine(data_path):
     return RecommendationEngine(data_path)
+
 recommendation_engine = load_recommendation_engine(data_path)
 
 selected = option_menu(
@@ -49,24 +48,20 @@ if selected == "Home":
     st.title("Welcome to Skin Pro! Your Personalized Skincare Assistant.")
     st.write("### Discover the perfect skincare routine tailored just for you. Whether you're dealing with acne, dryness, aging, or simply want to glow, SKIN PRO provides expert-backed, customized product recommendations to help you achieve your skin goals.")
     st.header("Key Features")
-
     st.markdown("""
     - **Tailored Skin Care Routine**: Receive personalized recommendations based on your specific skin concerns and goals.
     - **Skin Type Analysis**: Identify your skin type and get expert advice on the best products suited for your skin.
     - **Product Reviews & Ratings**: Explore what other users are saying about the products we recommend. Find out which ones work best for your skin.
     - **Expert-backed Guidance**: Benefit from advice that combines scientific knowledge, dermatological research, and real user experiences.
     """)
-
     st.image("images/3.jpg", width=1000)
     st.write("### While my skincare recommendation engine helps match you with the right products, this section is dedicated to sharing practical skincare tips. From building a morning routine to evening care, these tips are designed to help you achieve healthy, glowing skin.")
     st.image("images/2.png", width=1000)
     st.write("### Let’s dive into the essentials of skincare!")
 
-
 elif selected == "Recommendation":
     st.title("Skincare Product Recommendation")
     st.write("Please select your preferences to get personalized skincare product recommendations.")
-    
     st.write("1. Select your skin type from the dropdown menu.")
     st.write("2. Choose your scent preference.")
     st.write("4. Click the 'Get Recommendations' button to see the recommended products.")
@@ -117,6 +112,7 @@ elif selected == "Recommendation":
                 
                 progress_bar.progress(100)
                 status_text.empty()
+
 elif selected == "Product Based Recommendation":
     st.title("Product Based Recommendation")
     st.write("Please select a product to get recommendations based on that product.")
@@ -157,4 +153,4 @@ elif selected == "Product Based Recommendation":
                 status_text.empty()
 
 elif selected == "About":
-    st.write("For More Information\n" + "https://github.com/EsraKorkmazz/skincare-product-recommendation-engine")  
+    st.write("For More Information\n" + "https://github.com/EsraKorkmazz/skincare-product-recommendation-engine")

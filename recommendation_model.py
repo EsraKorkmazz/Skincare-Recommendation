@@ -1,10 +1,14 @@
-import streamlit as st
+import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
-from transformers import pipeline
-import pandas as pd
 from sklearn.decomposition import TruncatedSVD
+from streamlit_option_menu import option_menu
+import streamlit as st
+import pandas as pd
 
+st.set_page_config(layout="wide")
+
+nlp = spacy.load("en_core_web_sm")
 class RecommendationEngine:
     def __init__(self, data_path):
         self.data = pd.read_csv(data_path)
@@ -16,12 +20,7 @@ class RecommendationEngine:
                                       self.data['Effectiveness'])
         self.data.fillna("", inplace=True)
         self.cosine_sim = self.create_tfidf_matrix(self.data)
-        self.summarizer = self.load_summarizer()
-   
-    @st.cache_data
-    def load_summarizer(self):
-        return pipeline("summarization", model="facebook/bart-base", device=-1)
-
+    
     def create_tfidf_matrix(self, _data):
         vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
         tfidf_matrix = vectorizer.fit_transform(_data['Combined Text'])
@@ -32,15 +31,14 @@ class RecommendationEngine:
     def get_review_summary(self, review_text, max_length=128):
         if len(review_text) > 1000:
             review_text = review_text[:1000]
+        
         try:
-            summary = self.summarizer(
-                review_text,
-                max_length=max_length,
-                min_length=30,
-                do_sample=False
-            )
-            return summary[0]['summary_text']
-        except Exception:
+            doc = nlp(review_text)
+            sentences = list(doc.sents)
+            summary = " ".join([str(sentence) for sentence in sentences[:3]])
+            
+            return summary
+        except Exception as e:
             return "Summary generation failed."
 
     def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
@@ -96,6 +94,3 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
-
-    
-    
