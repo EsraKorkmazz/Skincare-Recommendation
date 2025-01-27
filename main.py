@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
-import warnings
-warnings.filterwarnings("ignore", message="numpy.dtype size changed")
-warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 data_path = "data/final_data_cleaned.csv"
 data = pd.read_csv(data_path)
