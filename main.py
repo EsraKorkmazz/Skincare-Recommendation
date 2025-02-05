@@ -18,7 +18,7 @@ recommendation_engine = RecommendationEngine(data_path)
 
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Recommendation", "Product Based Recommendation", "Chat", "About"],
+    options=["Home", "Recommendation", "Product Based Recommendation", "About"],
     icons=["house", "magic", "magic", "info-circle"], 
     menu_icon="cast",
     default_index=0,
@@ -172,10 +172,6 @@ elif selected == "Product Based Recommendation":
             
             progress_bar.progress(100)
             status_text.empty()
-
-elif selected == "Chat":
-    st.title("Chat with the Bot!")
-
 
 elif selected == "About":
     st.title("About Skin Pro")
