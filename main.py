@@ -173,7 +173,7 @@ elif selected == "Product Based Recommendation":
             progress_bar.progress(100)
             status_text.empty()
 elif selected == "CHAT":
-    st.subheader("Chat with the Bot!")
+    st.title("Chat with the Bot!")
 
 elif selected == "About":
     st.title("About Skin Pro")
