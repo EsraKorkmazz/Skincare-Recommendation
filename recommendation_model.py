@@ -43,7 +43,6 @@ class SummaryGenerator:
                 summary_data = response.json()
                 if isinstance(summary_data, list) and len(summary_data) > 0:
                     return str(summary_data[0]['generated_text'])
-                    #return summary_data[0]['generated_text']
                 else:
                     return self._get_review_excerpt(review_text)
                     
