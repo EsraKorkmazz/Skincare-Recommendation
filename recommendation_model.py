@@ -1,19 +1,25 @@
-import spacy
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
-from streamlit_option_menu import option_menu
+import os
 import streamlit as st
 import pandas as pd
-import os
+import requests
+from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
 
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    os.system("python -m spacy download en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+HF_API_KEY = st.secrets["skin"]["skin_api_key"]
+
+HEADERS = {"Authorization": f"Bearer {HF_API_KEY}"}
+
+def get_summary_from_api(review_text):
+    try:
+        url = "https://api-inference.huggingface.co/models/t5-small"
+        data = {"inputs": review_text}
+        response = requests.post(url, headers=HEADERS, json=data)
+        response.raise_for_status() 
+        summary = response.json()[0]['generated_text']
+        return summary
+    except Exception as e:
+        return "Summary generation failed."
 
 class RecommendationEngine:
     def __init__(self, data_path):
@@ -25,28 +31,7 @@ class RecommendationEngine:
                                       self.data['Scent'] + " " +
                                       self.data['Effectiveness'])
         self.data.fillna("", inplace=True)
-        self.cosine_sim = self.create_tfidf_matrix(self.data)
     
-    def create_tfidf_matrix(self, _data):
-        vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
-        tfidf_matrix = vectorizer.fit_transform(_data['Combined Text'])
-        svd = TruncatedSVD(n_components=100)
-        reduced_matrix = svd.fit_transform(tfidf_matrix)
-        return cosine_similarity(reduced_matrix, reduced_matrix)
-
-    def get_review_summary(self, review_text, max_length=128):
-        if len(review_text) > 1000:
-            review_text = review_text[:1000]
-        
-        try:
-            doc = nlp(review_text)
-            sentences = list(doc.sents)
-            summary = " ".join([str(sentence) for sentence in sentences[:3]])
-            
-            return summary
-        except Exception as e:
-            return "Summary generation failed."
-
     def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
         try:
             mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
@@ -57,15 +42,8 @@ class RecommendationEngine:
             if filtered_data.empty:
                 return [], [], [], [], [], []
 
-            idx = (filtered_data.index[0] if product_name not in filtered_data['Product Name'].values
-                   else self.data[self.data['Product Name'] == product_name].index[0])
-            sim_scores = [(i, self.cosine_sim[idx][i]) for i in filtered_data.index]
-            sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[:top_n]
-            product_indices = [i[0] for i in sim_scores]
-
-            recommended_products = self.data.iloc[product_indices]
-
-            summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
+            recommended_products = filtered_data.head(top_n)
+            summaries = [get_summary_from_api(review) for review in recommended_products['Reviews']]
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -76,20 +54,15 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
-        
+
     def get_product_based_recommendations(self, selected_product, top_n=20):
         try:
             if selected_product not in self.data['Product Name'].values:
                 return [], [], [], [], [], []
 
-            idx = self.data[self.data['Product Name'] == selected_product].index[0]
-            sim_scores = [(i, self.cosine_sim[idx][i]) for i in range(len(self.data))]
-            sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[:top_n]
-            product_indices = [i[0] for i in sim_scores]
-
-            recommended_products = self.data.iloc[product_indices]
+            recommended_products = self.data.head(top_n) 
             recommended_products = recommended_products.drop_duplicates(subset='Product Name')
-            summaries = [self.get_review_summary(review) for review in recommended_products['Reviews']]
+            summaries = [get_summary_from_api(review) for review in recommended_products['Reviews']]
 
             return (recommended_products['Product Name'].tolist(),
                     recommended_products['Product Brand'].tolist(),
@@ -100,3 +73,4 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error: {str(e)}")
             return [], [], [], [], [], []
+
