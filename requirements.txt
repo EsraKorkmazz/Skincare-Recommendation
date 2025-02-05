@@ -5,5 +5,3 @@ streamlit-option-menu==0.4.0
 spacy==3.8.4
 spacy-streamlit==1.0.6
 thinc==8.3.4
-spacy
-en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0
