@@ -174,6 +174,13 @@ elif selected == "Product Based Recommendation":
             progress_bar.progress(100)
             status_text.empty()
 elif selected == "CHAT":
+    if "skin" in st.secrets:
+        st.write("API Key Loaded Successfully!")
+    else:
+        st.write("API Key Missing!")
+
+    api_key = st.secrets["skin"]["HF_API_KEY"]
+
     st.subheader("Chat with the Bot!")
 
     if 'chat_history' not in st.session_state:
