@@ -112,7 +112,7 @@ elif selected == "Recommendation":
                                     st.markdown(f"### {brands[idx]}")
                                     st.image(images[idx], 
                                         caption=names[idx], 
-                                        use_column_width=True)
+                                         use_container_width=True)
                                     with st.expander("Product Details"):
                                         st.write(f"**Ease of Use:** {ease_of_use[idx]}")
                                         st.write("**Product Summary:**")
@@ -162,7 +162,7 @@ elif selected == "Product Based Recommendation":
                                 st.markdown(f"### {brands[idx]}")
                                 st.image(images[idx], 
                                     caption=names[idx], 
-                                    use_column_width=True)
+                                     use_container_width=True)
                                 with st.expander("Product Details"):
                                     st.write(f"**Ease of Use:** {ease_of_use[idx]}")
                                     st.write("**Product Summary:**")
