@@ -2,8 +2,10 @@ import streamlit as st
 import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
+from chat import get_bot_response
 
 st.set_page_config(layout="wide")
+api_key = st.secrets["skin"]["HF_API_KEY"]
 
 @st.cache_data
 def load_data():
@@ -17,7 +19,7 @@ recommendation_engine = RecommendationEngine(data_path)
 
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Recommendation", "Product Based Recommendation", "About"],
+    options=["Home", "Recommendation", "Product Based Recommendation","Chat", "About"],
     icons=["house", "magic", "magic", "info-circle"], 
     menu_icon="cast",
     default_index=0,
@@ -171,6 +173,27 @@ elif selected == "Product Based Recommendation":
             
             progress_bar.progress(100)
             status_text.empty()
+elif selected == "CHAT":
+    st.subheader("Chat with the Bot!")
+
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+
+    user_input = st.text_input("You:", key="user_input")
+
+    if user_input:
+        st.session_state.chat_history.append(f"You: {user_input}")
+
+        bot_response = get_bot_response(user_input, api_key)
+
+        st.session_state.chat_history.append(f"Bot: {bot_response}")
+
+    for message in st.session_state.chat_history:
+        st.write(message)
+
+    if st.button("Clear chat"):
+        st.session_state.chat_history.clear()
+        st.experimental_rerun()
 
 elif selected == "About":
     st.title("About Skin Pro")
