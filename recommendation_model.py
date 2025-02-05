@@ -6,7 +6,7 @@ from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
 
-HF_API_KEY = st.secrets["skin_api_key"]
+HF_API_KEY = st.secrets["skin"]["HF_API_KEY"]
 
 HEADERS = {"Authorization": f"Bearer {HF_API_KEY}"}
 
