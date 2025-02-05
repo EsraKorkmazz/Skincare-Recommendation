@@ -177,27 +177,50 @@ elif selected == "Product Based Recommendation":
             status_text.empty()
 elif selected == "CHAT":
     st.title("Chat with the Bot!")
+
+    # Initialize conversation history in session state if not already present
+    if "conversation" not in st.session_state:
+        st.session_state["conversation"] = []
+
+    # Function to get bot response
     def get_bot_response(user_input: str, api_key: str) -> str:
         model_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
         headers = {"Authorization": f"Bearer {api_key}"}
+        
+        # Sending POST request to Hugging Face API
         response = requests.post(
             model_url,
             headers=headers,
             json={"inputs": user_input}
         )
+
+        # Log the API response for debugging
+        st.write("API Response:", response.text)
         
+        # Check if the response is successful and parse the JSON
         if response.status_code == 200:
             response_json = response.json()
             return response_json[0]['generated_text']
         else:
             return "Sorry, I couldn't get a response right now."
     
+    # User input field
     user_input = st.text_input("Ask me anything about skincare!", "")
     
+    # If the user provides input, get response and update conversation history
     if user_input:
         with st.spinner("Bot is thinking..."):
-            response = get_bot_response(user_input, api_key)
-            st.write("Bot:", response)
+            # Get bot's response
+            bot_response = get_bot_response(user_input, api_key)
+            
+            # Store conversation history
+            st.session_state["conversation"].append(("User", user_input))
+            st.session_state["conversation"].append(("Bot", bot_response))
+        
+        # Display the conversation history
+        for speaker, message in st.session_state["conversation"]:
+            st.write(f"**{speaker}:** {message}")
+
 
 elif selected == "About":
     st.title("About Skin Pro")
