@@ -70,18 +70,9 @@ elif selected == "Recommendation":
     st.write("2. Choose your scent preference.")
     st.write("4. Click the 'Get Recommendations' button to see the recommended products.")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        skin_type = st.selectbox(
-            "Select Your Skin Type",
-            ['Oily', 'Dry', 'Sensitive', 'Combination', 'Normal', 'Acne', 'Aging', 'All']
-        )
-    with col2:
-        scent = st.selectbox(
-            "Select scent preference",
-            ['Light', 'Strong', 'All']
-        )
-        
+    skin_type = st.selectbox("Select Your Skin Type", ['Oily', 'Dry', 'Sensitive', 'Combination', 'Normal', 'Acne', 'Aging', 'All'])
+    scent = st.selectbox("Select scent preference", ['Light', 'Strong', 'All'])
+
     if st.button("Get Recommendations :sparkles:"):
         with st.spinner("Finding the perfect products for you..."):
             progress_bar = st.progress(0)
