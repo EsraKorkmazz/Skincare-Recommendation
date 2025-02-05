@@ -58,7 +58,7 @@ if selected == "Home":
     - **Expert-backed Guidance**: Benefit from advice that combines scientific knowledge, dermatological research, and real user experiences.
     """)
 
-    st.image("images/3.jpg", width=1000, use_container_width=True)
+    st.image("images/3.jpg",use_container_width=True)
     st.write("### While my skincare recommendation engine helps match you with the right products, this section is dedicated to sharing practical skincare tips. From building a morning routine to evening care, these tips are designed to help you achieve healthy, glowing skin.")
     st.image("images/2.png", width=1000, use_container_width=True)
     st.write("### Let's dive into the essentials of skincare!")
