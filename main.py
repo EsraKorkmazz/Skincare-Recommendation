@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
+from langchain_huggingface import HuggingFaceEndpoint
+import os
+import requests
 
 st.set_page_config(layout="wide")
 api_key = st.secrets["skin"]["HF_API_KEY"]
@@ -174,6 +177,27 @@ elif selected == "Product Based Recommendation":
             status_text.empty()
 elif selected == "CHAT":
     st.title("Chat with the Bot!")
+    def get_bot_response(user_input: str, api_key: str) -> str:
+        model_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
+        headers = {"Authorization": f"Bearer {api_key}"}
+        response = requests.post(
+            model_url,
+            headers=headers,
+            json={"inputs": user_input}
+        )
+        
+        if response.status_code == 200:
+            response_json = response.json()
+            return response_json[0]['generated_text']
+        else:
+            return "Sorry, I couldn't get a response right now."
+    
+    user_input = st.text_input("Ask me anything about skincare!", "")
+    
+    if user_input:
+        with st.spinner("Bot is thinking..."):
+            response = get_bot_response(user_input, api_key)
+            st.write("Bot:", response)
 
 elif selected == "About":
     st.title("About Skin Pro")
