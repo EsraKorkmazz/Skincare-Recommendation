@@ -5,10 +5,15 @@ from sklearn.decomposition import TruncatedSVD
 from streamlit_option_menu import option_menu
 import streamlit as st
 import pandas as pd
+import os
 
 st.set_page_config(layout="wide")
 
-nlp = spacy.load("en_core_web_sm")
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    os.system("python -m spacy download en_core_web_sm")
+    nlp = spacy.load("en_core_web_sm")
 
 class RecommendationEngine:
     def __init__(self, data_path):
