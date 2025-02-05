@@ -9,9 +9,9 @@ class SummaryGenerator:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.headers = {"Authorization": f"Bearer {api_key}"}
-        self.base_url = "https://api-inference.huggingface.co/models/t5-small"
+        self.base_url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
         self.max_retries = 3
-        self.retry_delay = 2  # seconds
+        self.retry_delay = 2 
 
     def get_summary(self, review_text: str) -> Optional[str]:
         if not review_text or len(review_text.strip()) == 0:
