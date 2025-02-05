@@ -11,10 +11,9 @@ class SummaryGenerator:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.headers = {"Authorization": f"Bearer {api_key}"}
-        # Using a different model that's more commonly accessible
         self.base_url = "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6"
         self.max_retries = 3
-        self.retry_delay = 2  # seconds
+        self.retry_delay = 2 
 
     def get_summary(self, review_text: str) -> Optional[str]:
         if not review_text or len(review_text.strip()) == 0:
@@ -22,10 +21,7 @@ class SummaryGenerator:
 
         for attempt in range(self.max_retries):
             try:
-                # Truncate long reviews to prevent API issues
                 truncated_review = review_text[:500] + "..." if len(review_text) > 500 else review_text
-                
-                # Construct a clear prompt for the model
                 prompt = f"summarize: {truncated_review}"
                 
                 response = requests.post(
@@ -35,12 +31,12 @@ class SummaryGenerator:
                     timeout=10
                 )
                 
-                if response.status_code == 429:  # Rate limit
+                if response.status_code == 429:
                     time.sleep(self.retry_delay * (attempt + 1))
                     continue
                 
                 if response.status_code == 401:
-                    return self._get_review_excerpt(review_text)  # Fallback to excerpt if unauthorized
+                    return self._get_review_excerpt(review_text)
                     
                 response.raise_for_status()
                 
@@ -51,7 +47,7 @@ class SummaryGenerator:
                     return self._get_review_excerpt(review_text)
                     
             except Exception as e:
-                if attempt == self.max_retries - 1:  # On last attempt, fall back to excerpt
+                if attempt == self.max_retries - 1: 
                     return self._get_review_excerpt(review_text)
                 time.sleep(self.retry_delay)
                 
@@ -81,7 +77,6 @@ class RecommendationEngine:
         )
         self.data.fillna("", inplace=True)
         
-        # Initialize the summary generator with a fallback mechanism
         try:
             self.summary_generator = SummaryGenerator(st.secrets["skin"]["HF_API_KEY"])
         except:

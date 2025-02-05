@@ -3,10 +3,8 @@ import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 
-# Configure page settings
 st.set_page_config(layout="wide")
 
-# Load data
 @st.cache_data
 def load_data():
     data_path = "data/final_data_cleaned.csv"
@@ -17,7 +15,6 @@ def load_data():
 data, data_path = load_data()
 recommendation_engine = RecommendationEngine(data_path)
 
-# Navigation menu
 selected = option_menu(
     menu_title=None,
     options=["Home", "Recommendation", "Product Based Recommendation", "About"],
@@ -60,15 +57,19 @@ if selected == "Home":
     - **Product Reviews & Ratings**: Explore what other users are saying about the products we recommend. Find out which ones work best for your skin.
     - **Expert-backed Guidance**: Benefit from advice that combines scientific knowledge, dermatological research, and real user experiences.
     """)
-    st.image("images/3.jpg", width=1000)
+
+    st.image("images/3.jpg", width=1000, use_container_width=True)
     st.write("### While my skincare recommendation engine helps match you with the right products, this section is dedicated to sharing practical skincare tips. From building a morning routine to evening care, these tips are designed to help you achieve healthy, glowing skin.")
-    st.image("images/2.png", width=1000)
+    st.image("images/2.png", width=1000, use_container_width=True)
     st.write("### Let's dive into the essentials of skincare!")
 
 elif selected == "Recommendation":
     st.title("Skincare Product Recommendation")
     st.write("Please select your preferences to get personalized skincare product recommendations.")
-    
+    st.write("1. Select your skin type from the dropdown menu.")
+    st.write("2. Choose your scent preference.")
+    st.write("4. Click the 'Get Recommendations' button to see the recommended products.")
+
     col1, col2 = st.columns(2)
     with col1:
         skin_type = st.selectbox(
@@ -88,8 +89,6 @@ elif selected == "Recommendation":
             
             status_text.text("Getting initial recommendations...")
             progress_bar.progress(25)
-            
-            # Get sample product for recommendation
             filtered_products = data[
                 (data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)) &
                 (data['Scent'].str.contains(scent, case=False, na=False) | (scent == 'All'))
@@ -111,7 +110,6 @@ elif selected == "Recommendation":
                     
                     names, brands, images, links, ease_of_use, summaries = recommended_products
                     
-                    # Display recommendations in a grid
                     BATCH_SIZE = 3
                     for i in range(0, len(names), BATCH_SIZE):
                         cols = st.columns(min(BATCH_SIZE, len(names) - i))
@@ -161,8 +159,7 @@ elif selected == "Product Based Recommendation":
                 progress_bar.progress(75)
                 
                 names, brands, images, links, ease_of_use, summaries = recommended_products
-                
-                # Display recommendations in a grid
+            
                 BATCH_SIZE = 3
                 for i in range(0, len(names), BATCH_SIZE):
                     cols = st.columns(min(BATCH_SIZE, len(names) - i))
