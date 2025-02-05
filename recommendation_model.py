@@ -5,13 +5,16 @@ import requests
 import time
 from typing import Optional
 
+api_key = st.secrets["skin"]["HF_API_KEY"]
+
 class SummaryGenerator:
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.headers = {"Authorization": f"Bearer {api_key}"}
-        self.base_url = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+        # Using a different model that's more commonly accessible
+        self.base_url = "https://api-inference.huggingface.co/models/sshleifer/distilbart-cnn-12-6"
         self.max_retries = 3
-        self.retry_delay = 2 
+        self.retry_delay = 2  # seconds
 
     def get_summary(self, review_text: str) -> Optional[str]:
         if not review_text or len(review_text.strip()) == 0:
@@ -20,7 +23,7 @@ class SummaryGenerator:
         for attempt in range(self.max_retries):
             try:
                 # Truncate long reviews to prevent API issues
-                truncated_review = review_text[:1000] + "..." if len(review_text) > 1000 else review_text
+                truncated_review = review_text[:500] + "..." if len(review_text) > 500 else review_text
                 
                 # Construct a clear prompt for the model
                 prompt = f"summarize: {truncated_review}"
@@ -28,13 +31,16 @@ class SummaryGenerator:
                 response = requests.post(
                     self.base_url,
                     headers=self.headers,
-                    json={"inputs": prompt},
-                    timeout=10  # Add timeout
+                    json={"inputs": prompt, "parameters": {"max_length": 100, "min_length": 30}},
+                    timeout=10
                 )
                 
                 if response.status_code == 429:  # Rate limit
                     time.sleep(self.retry_delay * (attempt + 1))
                     continue
+                
+                if response.status_code == 401:
+                    return self._get_review_excerpt(review_text)  # Fallback to excerpt if unauthorized
                     
                 response.raise_for_status()
                 
@@ -42,20 +48,25 @@ class SummaryGenerator:
                 if isinstance(summary_data, list) and len(summary_data) > 0:
                     return summary_data[0]['generated_text']
                 else:
-                    st.warning(f"Unexpected API response format: {summary_data}")
-                    return "Summary unavailable"
+                    return self._get_review_excerpt(review_text)
                     
-            except requests.exceptions.Timeout:
-                st.warning(f"Request timed out (attempt {attempt + 1}/{self.max_retries})")
-                time.sleep(self.retry_delay)
-            except requests.exceptions.RequestException as e:
-                st.error(f"API request failed: {str(e)}")
-                return "Summary generation failed due to API error"
             except Exception as e:
-                st.error(f"Unexpected error during summary generation: {str(e)}")
-                return "Summary generation failed"
+                if attempt == self.max_retries - 1:  # On last attempt, fall back to excerpt
+                    return self._get_review_excerpt(review_text)
+                time.sleep(self.retry_delay)
+                
+        return self._get_review_excerpt(review_text)
+
+    def _get_review_excerpt(self, review: str, max_length: int = 200) -> str:
+        """Fallback method to create a brief excerpt from the review text"""
+        if not review or len(review.strip()) == 0:
+            return "No review available"
         
-        return "Summary generation failed after retries"
+        excerpt = review[:max_length]
+        last_period = excerpt.rfind('.')
+        if last_period > 0:
+            excerpt = excerpt[:last_period + 1]
+        return excerpt.strip()
 
 class RecommendationEngine:
     def __init__(self, data_path: str):
@@ -69,17 +80,27 @@ class RecommendationEngine:
             self.data['Effectiveness']
         )
         self.data.fillna("", inplace=True)
-        self.summary_generator = SummaryGenerator(st.secrets["skin"]["HF_API_KEY"])
+        
+        # Initialize the summary generator with a fallback mechanism
+        try:
+            self.summary_generator = SummaryGenerator(st.secrets["skin"]["HF_API_KEY"])
+        except:
+            st.warning("API key not found or invalid. Using review excerpts instead.")
+            self.summary_generator = None
 
-    def _generate_summaries(self, products_df: pd.DataFrame) -> list:
-        summaries = []
+    def _process_reviews(self, products_df: pd.DataFrame) -> list:
+        """Process reviews with fallback to excerpts if API fails"""
+        processed_reviews = []
         for review in products_df['Reviews']:
-            with st.spinner("Generating product summary..."):
-                summary = self.summary_generator.get_summary(review)
-                summaries.append(summary)
-            # Add small delay between API calls to avoid rate limiting
-            time.sleep(0.5)
-        return summaries
+            if self.summary_generator:
+                try:
+                    summary = self.summary_generator.get_summary(review)
+                    processed_reviews.append(summary)
+                except:
+                    processed_reviews.append(self.summary_generator._get_review_excerpt(review))
+            else:
+                processed_reviews.append(self.summary_generator._get_review_excerpt(review))
+        return processed_reviews
 
     def get_content_based_recommendations(self, product_name: str, skin_type: str, scent: str, top_n: int = 20):
         try:
@@ -90,11 +111,10 @@ class RecommendationEngine:
             filtered_data = self.data[mask].drop_duplicates(subset=['Product Name'])
             
             if filtered_data.empty:
-                st.warning("No products found matching your criteria.")
                 return [], [], [], [], [], []
             
             recommended_products = filtered_data.head(top_n)
-            summaries = self._generate_summaries(recommended_products)
+            processed_reviews = self._process_reviews(recommended_products)
             
             return (
                 recommended_products['Product Name'].tolist(),
@@ -102,7 +122,7 @@ class RecommendationEngine:
                 recommended_products['Image Link'].tolist(),
                 recommended_products['Product Link'].tolist(),
                 recommended_products['Ease of Use'].tolist(),
-                summaries
+                processed_reviews
             )
             
         except Exception as e:
@@ -112,12 +132,11 @@ class RecommendationEngine:
     def get_product_based_recommendations(self, selected_product: str, top_n: int = 20):
         try:
             if selected_product not in self.data['Product Name'].values:
-                st.warning("Selected product not found in database.")
                 return [], [], [], [], [], []
             
             recommended_products = self.data.head(top_n)
             recommended_products = recommended_products.drop_duplicates(subset='Product Name')
-            summaries = self._generate_summaries(recommended_products)
+            processed_reviews = self._process_reviews(recommended_products)
             
             return (
                 recommended_products['Product Name'].tolist(),
@@ -125,7 +144,7 @@ class RecommendationEngine:
                 recommended_products['Image Link'].tolist(),
                 recommended_products['Product Link'].tolist(),
                 recommended_products['Ease of Use'].tolist(),
-                summaries
+                processed_reviews
             )
             
         except Exception as e:
