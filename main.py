@@ -69,7 +69,7 @@ if selected == "Home":
 elif selected == "Popular Products":
     try:
         ulta_data = pd.read_csv("data/final_data_cleaned.csv")
-        top_10_products = pd.read_csv("top_10_products.csv")
+        top_10_products = pd.read_csv("top_20_products.csv")
 
         st.title("Top 20 Most Popular and Loved Products")
         st.write("""
