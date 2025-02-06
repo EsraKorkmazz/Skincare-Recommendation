@@ -69,7 +69,6 @@ class SummaryGenerator:
 class RecommendationEngine:
     def __init__(self, data_path: str):
         self.data = pd.read_csv(data_path)
-        # Combine multiple text columns into one for recommendation
         self.data['Combined Text'] = (
             self.data['Reviews'] + " " +
             self.data['Skin Type Compatibility'] + " " +
@@ -102,7 +101,6 @@ class RecommendationEngine:
 
     def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
         try:
-            # Filter products based on skin type and scent
             mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
             if scent != 'All':
                 mask &= self.data['Scent'].str.contains(scent, case=False, na=False)
@@ -111,25 +109,19 @@ class RecommendationEngine:
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
-            # Reset index to ensure alignment
             filtered_data = filtered_data.reset_index(drop=True)
 
-            # Ensure the product exists in the filtered set; otherwise, use the first product
             if product_name in filtered_data['Product Name'].values:
                 idx = filtered_data[filtered_data['Product Name'] == product_name].index[0]
             else:
                 idx = 0
 
-            # Compute TF-IDF matrix on the "Combined Text" column
             tfidf = TfidfVectorizer(stop_words='english')
             tfidf_matrix = tfidf.fit_transform(filtered_data['Combined Text'])
-            
-            # Compute cosine similarity between products
+
             cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-            
-            # Get similarity scores for the selected product
+
             sim_scores = list(enumerate(cosine_sim[idx]))
-            # Sort products by similarity score (excluding the selected product itself)
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
             sim_scores = [s for s in sim_scores if s[0] != idx]
             sim_scores = sim_scores[:top_n]
@@ -156,8 +148,6 @@ class RecommendationEngine:
             if selected_product not in self.data['Product Name'].values:
                 return [], [], [], [], [], []
             
-            # For product-based recommendation, you might also apply a similarity-based method.
-            # For simplicity, here we filter and return a subset of products.
             recommended_products = self.data.drop_duplicates(subset='Product Name')
             recommended_products = recommended_products.reset_index(drop=True)
             recommended_products = recommended_products.head(top_n)
