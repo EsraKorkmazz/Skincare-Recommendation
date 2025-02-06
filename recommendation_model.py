@@ -99,11 +99,12 @@ class RecommendationEngine:
 
     def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
         try:
-            mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
+            filtered_data = self.data[self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)]
             if scent != 'All':
-                mask &= self.data['Scent'].str.contains(scent, case=False, na=False)
+                filtered_data = filtered_data[filtered_data['Scent'].str.contains(scent, case=False, na=False)]
+
             
-            filtered_data = self.data[mask].drop_duplicates(subset=['Product Name'])
+            filtered_data = self.data[filtered_data].drop_duplicates(subset=['Product Name'])
             
             if filtered_data.empty:
                 return [], [], [], [], [], []
@@ -122,6 +123,7 @@ class RecommendationEngine:
                 recommended_products['Ease of Use'].tolist(),
                 processed_reviews
             )
+
             
         except Exception as e:
             st.error(f"Error in recommendation generation: {str(e)}")

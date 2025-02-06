@@ -101,9 +101,8 @@ elif selected == "Recommendation":
                     status_text.text("Preparing your personalized recommendations...")
                     
                     sample_product = filtered_products.iloc[0]['Product Name']
-                    recommended_products = recommendation_engine.get_content_based_recommendations(
-                        sample_product, skin_type, scent, top_n=40
-                    )
+                    st.write(f"### Recommendations for {sample_product}")
+                    st.write(recommended_products)
                     names, brands, images, links, ease_of_use, summaries = recommended_products
                     
                     BATCH_SIZE = 3
