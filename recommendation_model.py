@@ -5,11 +5,6 @@ import requests
 import time
 from typing import Optional
 
-data_path = "data/final_data_cleaned.csv"
-data = pd.read_csv(data_path)
-data.fillna("", inplace=True)
-
-
 api_key = st.secrets["skin"]["HF_API_KEY"]
 
 class SummaryGenerator:
