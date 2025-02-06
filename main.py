@@ -73,13 +73,14 @@ elif selected == "Popular Products":
 
         st.title("Top 20 Most Popular and Loved Products")
         st.write("""
-        Based on user reviews and sentiment analysis, here are the top 10 products that have received the most love from our customers!
+        Based on user reviews and sentiment analysis, here are the top 20 products that have received the most love from our customers!
         """)
         num_columns = 3  
         columns = st.columns(num_columns)
         for idx, row in top_10_products.iterrows():
             column_idx = idx % num_columns 
             with columns[column_idx]:
+                st.markdown(f"<h3 style='text-align: center; font-weight: bold;'>{row['Product Name']}</h3>", unsafe_allow_html=True)
                 st.subheader(f"**{row['Product Name']}**")
                 product_image = row.get('Image Link', 'default_image.jpg')
                 product_link = row.get('Product Link', '#')
