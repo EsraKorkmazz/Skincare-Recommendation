@@ -97,7 +97,7 @@ class RecommendationEngine:
                 processed_reviews.append(self.summary_generator._get_review_excerpt(review))
         return processed_reviews
 
-    def get_content_based_recommendations(self, product_name: str, skin_type: str, scent: str, top_n: int = 20):
+    def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
         try:
             mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
             if scent != 'All':
@@ -107,6 +107,9 @@ class RecommendationEngine:
             
             if filtered_data.empty:
                 return [], [], [], [], [], []
+            
+            idx = (filtered_data.index[0] if product_name not in filtered_data['Product Name'].values
+                   else self.data[self.data['Product Name'] == product_name].index[0])
             
             recommended_products = filtered_data.head(top_n)
             processed_reviews = self._process_reviews(recommended_products)
