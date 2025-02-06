@@ -58,7 +58,6 @@ if selected == "Home":
     - **Product Reviews & Ratings**: Explore what other users are saying about the products we recommend. Find out which ones work best for your skin.
     - **Expert-backed Guidance**: Benefit from advice that combines scientific knowledge, dermatological research, and real user experiences.
     """)
-
     st.image("images/3.jpg", use_container_width=True)
     st.write("### While my skincare recommendation engine helps match you with the right products, this section is dedicated to sharing practical skincare tips. From building a morning routine to evening care, these tips are designed to help you achieve healthy, glowing skin.")
     st.image("images/2.png", use_container_width=True)
@@ -69,7 +68,7 @@ elif selected == "Recommendation":
     st.write("Please select your preferences to get personalized skincare product recommendations.")
     st.write("1. Select your skin type from the dropdown menu.")
     st.write("2. Choose your scent preference.")
-    st.write("4. Click the 'Get Recommendations' button to see the recommended products.")
+    st.write("3. Click the 'Get Recommendations' button to see the recommended products.")
 
     skin_type = st.selectbox("Select Your Skin Type", ['Oily', 'Dry', 'Sensitive', 'Combination', 'Normal', 'Acne', 'Aging', 'All'])
     scent = st.selectbox("Select scent preference", ['Light', 'Strong', 'All'])
@@ -78,9 +77,10 @@ elif selected == "Recommendation":
         with st.spinner("Finding the perfect products for you..."):
             progress_bar = st.progress(0)
             status_text = st.empty()
-            
+
             status_text.text("Getting initial recommendations...")
             progress_bar.progress(25)
+
             filtered_products = data[
                 (data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)) &
                 (data['Scent'].str.contains(scent, case=False, na=False) | (scent == 'All'))
@@ -90,34 +90,32 @@ elif selected == "Recommendation":
                 st.warning("No products found matching your criteria. Please try different preferences.")
             else:
                 sample_product = filtered_products.iloc[0]['Product Name']
+                # Call the recommendation function once and store the result
                 recommended_products = recommendation_engine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40
                 )
-                
+
+                # Optionally, you can uncomment the next line to debug the list lengths:
+                st.write(f"List Lengths: {[len(lst) for lst in recommended_products]}")
+
+                # Check if recommendations were found based on the returned lists
                 if not any(recommended_products):
                     st.warning("No recommendations found. Please try different preferences.")
                 else:
                     progress_bar.progress(75)
                     status_text.text("Preparing your personalized recommendations...")
-                    
-                    sample_product = filtered_products.iloc[0]['Product Name']
-                    recommended_products = recommendation_engine.get_content_based_recommendations(
-                        sample_product, skin_type, scent, top_n=40
-                    )
+
                     names, brands, images, links, ease_of_use, summaries = recommended_products
-                    
+
                     BATCH_SIZE = 3
                     for i in range(0, len(names), BATCH_SIZE):
                         cols = st.columns(min(BATCH_SIZE, len(names) - i))
-                        
                         for j, col in enumerate(cols):
                             idx = i + j
                             if idx < len(names):
                                 with col:
                                     st.markdown(f"### {brands[idx]}")
-                                    st.image(images[idx], 
-                                        caption=names[idx], 
-                                         use_container_width=True)
+                                    st.image(images[idx], caption=names[idx], use_container_width=True)
                                     with st.expander("Product Details"):
                                         st.write(f"**Ease of Use:** {ease_of_use[idx]}")
                                         st.write("**Product Summary:**")
@@ -155,19 +153,19 @@ elif selected == "Product Based Recommendation":
                 progress_bar.progress(75)
                 
                 names, brands, images, links, ease_of_use, summaries = recommended_products
-            
+
+                # Optionally, uncomment to debug list lengths:
+                st.write(f"List Lengths: {[len(lst) for lst in recommended_products]}")
+
                 BATCH_SIZE = 3
                 for i in range(0, len(names), BATCH_SIZE):
                     cols = st.columns(min(BATCH_SIZE, len(names) - i))
-                    
                     for j, col in enumerate(cols):
                         idx = i + j
                         if idx < len(names):
                             with col:
                                 st.markdown(f"### {brands[idx]}")
-                                st.image(images[idx], 
-                                    caption=names[idx], 
-                                     use_container_width=True)
+                                st.image(images[idx], caption=names[idx], use_container_width=True)
                                 with st.expander("Product Details"):
                                     st.write(f"**Ease of Use:** {ease_of_use[idx]}")
                                     st.write("**Product Summary:**")
@@ -186,4 +184,4 @@ elif selected == "About":
     https://github.com/EsraKorkmazz/skincare-product-recommendation-engine
     
     Created with ❤️ by Esra Korkmaz
-    """) 
+    """)
