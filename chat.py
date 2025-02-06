@@ -14,7 +14,8 @@ def get_skin_recommendations(query):
     try:
         # Make an API request to OpenAI's GPT model
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3",
+            max_tokens=150,
             messages=[
                 {"role": "system", "content": "You are a skin care expert. Provide only skin care product names based on the user's criteria without any additional text."},
                 {"role": "user", "content": prompt}
