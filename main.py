@@ -81,6 +81,7 @@ elif selected == "Popular Products":
             column_idx = idx % num_columns 
             with columns[column_idx]:
                 st.markdown(f"<h3 style='text-align: center; font-weight: bold;'>{row['Product Name']}</h3>", unsafe_allow_html=True)
+
                 product_image = row.get('Image Link', 'default_image.jpg')
                 product_link = row.get('Product Link', '#')
 
