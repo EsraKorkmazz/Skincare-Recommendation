@@ -103,14 +103,14 @@ class RecommendationEngine:
             if scent != 'All':
                 mask &= self.data['Scent'].str.contains(scent, case=False, na=False)
             
-            filtered_data = self.data[mask].drop_duplicates(subset=['Product Name'])
-            
+            filtered_data = self.data[mask].drop_duplicates(subset=['Product Name']).reset_index(drop=True)
+
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
             recommended_products = filtered_data.head(top_n)
             processed_reviews = self._process_reviews(recommended_products)
-            
+
             return (
                 recommended_products['Product Name'].tolist(),
                 recommended_products['Product Brand'].tolist(),
@@ -129,7 +129,7 @@ class RecommendationEngine:
             if selected_product not in self.data['Product Name'].values:
                 return [], [], [], [], [], []
             
-            recommended_products = self.data.head(top_n)
+            recommended_products = self.data.iloc(top_n)
             recommended_products = recommended_products.drop_duplicates(subset='Product Name')
             processed_reviews = self._process_reviews(recommended_products)
             
