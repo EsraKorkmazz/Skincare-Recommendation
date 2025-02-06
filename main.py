@@ -100,29 +100,29 @@ elif selected == "Recommendation":
                     progress_bar.progress(75)
                     status_text.text("Preparing your personalized recommendations...")
                     
-                    sample_product = filtered_products.iloc[0]['Product Name'] #sonradan eklendi
-                    recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(
-                    sample_product, skin_type, scent, top_n=40
-                )
-                    #names, brands, images, links, ease_of_use, summaries = recommended_products
+                    sample_product = filtered_products.iloc[0]['Product Name']
+                    recommended_products = recommendation_engine.get_content_based_recommendations(
+                        sample_product, skin_type, scent, top_n=40
+                    )
+                    names, brands, images, links, ease_of_use, summaries = recommended_products
                     
                     BATCH_SIZE = 3
-                    for i in range(0, len(recommended_names), BATCH_SIZE):
-                        cols = st.columns(min(BATCH_SIZE, len(recommended_names) - i))
+                    for i in range(0, len(names), BATCH_SIZE):
+                        cols = st.columns(min(BATCH_SIZE, len(names) - i))
                         
                         for j, col in enumerate(cols):
                             idx = i + j
-                            if idx < len(recommended_names):
+                            if idx < len(names):
                                 with col:
-                                    st.markdown(f"### {recommended_brands[idx]}")
-                                    st.image(recommended_images[idx], 
-                                        caption=recommended_names[idx], 
+                                    st.markdown(f"### {brands[idx]}")
+                                    st.image(images[idx], 
+                                        caption=names[idx], 
                                          use_container_width=True)
                                     with st.expander("Product Details"):
-                                        st.write(f"**Ease of Use:** {recommended_ease_of_use[idx]}")
+                                        st.write(f"**Ease of Use:** {ease_of_use[idx]}")
                                         st.write("**Product Summary:**")
-                                        st.write(recommended_summaries[idx])
-                                        st.markdown(f"[View Product]({recommended_links[idx]})")
+                                        st.write(summaries[idx])
+                                        st.markdown(f"[View Product]({links[idx]})")
                 
                 progress_bar.progress(100)
                 status_text.empty()
