@@ -93,10 +93,6 @@ elif selected == "Recommendation":
                 recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40
                 )
-                #sample_product = filtered_products.iloc[0]['Product Name']
-                #recommended_products = recommendation_engine.get_content_based_recommendations(
-                #   sample_product, skin_type, scent, top_n=40
-                #)
                 
                 if not any(recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries):
                     st.warning("No recommendations found. Please try different preferences.")

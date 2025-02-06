@@ -105,6 +105,7 @@ class RecommendationEngine:
     def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
         try:
             mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
+            mask &= self.data['Product Name'].str.contains(product_name, case=False, na=False)
             if scent != 'All':
                 mask &= self.data['Scent'].str.contains(scent, case=False, na=False)
             
@@ -114,8 +115,7 @@ class RecommendationEngine:
                 return [], [], [], [], [], []
             
             recommended_products = filtered_data.head(top_n).copy()
-            processed_reviews = [self.get_review_summary(review) for review in recommended_products['Reviews']]
-            #processed_reviews = self._process_reviews(recommended_products)
+            processed_reviews = [self.summary_generator.get_summary(review) if self.summary_generator else self.summary_generator._get_review_excerpt(review) for review in recommended_products['Reviews']]
 
             return (
                 recommended_products['Product Name'].tolist(),
