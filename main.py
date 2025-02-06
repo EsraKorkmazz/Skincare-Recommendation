@@ -149,9 +149,6 @@ elif selected == "Product Based Recommendation":
                 
                 names, brands, images, links, ease_of_use, summaries = recommended_products
 
-                # Optionally, uncomment to debug list lengths:
-                st.write(f"List Lengths: {[len(lst) for lst in recommended_products]}")
-
                 BATCH_SIZE = 3
                 for i in range(0, len(names), BATCH_SIZE):
                     cols = st.columns(min(BATCH_SIZE, len(names) - i))
