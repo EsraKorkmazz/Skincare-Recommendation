@@ -6,7 +6,6 @@ from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 api_key = st.secrets["skin"]["HF_API_KEY"]
 
-@st.cache_data
 def load_data():
     data_path = "data/final_data_cleaned.csv"
     data = pd.read_csv(data_path)
