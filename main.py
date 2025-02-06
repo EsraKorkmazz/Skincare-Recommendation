@@ -186,4 +186,4 @@ elif selected == "About":
     https://github.com/EsraKorkmazz/skincare-product-recommendation-engine
     
     Created with ❤️ by Esra Korkmaz
-    """)
+    """) 
