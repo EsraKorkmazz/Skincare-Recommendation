@@ -109,9 +109,6 @@ class RecommendationEngine:
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
-            idx = (filtered_data.index[0] if product_name not in filtered_data['Product Name'].values
-                   else self.data[self.data['Product Name'] == product_name].index[0])
-            
             recommended_products = filtered_data.head(top_n)
             processed_reviews = self._process_reviews(recommended_products)
             
