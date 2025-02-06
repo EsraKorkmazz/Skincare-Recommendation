@@ -64,5 +64,6 @@ recommendation-system/
 ├── recommendation_model.py          # Recommendation engine logic and methods
 ├── main.py                          # Streamlit app for the front end
 ├── requirements.txt                 # Python dependencies for the project
-└── README.md                        # Project overview, setup instructions, etc.
+└── chat.py                          # Chatbot
+└──README.md                         # Project overview, setup instructions, etc.
 ```
