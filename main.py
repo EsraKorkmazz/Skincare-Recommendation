@@ -68,30 +68,22 @@ if selected == "Home":
 
 elif selected == "Popular Products":
     try:
-        # Load the cleaned data and the top 10 products CSV
         ulta_data = pd.read_csv("data/final_data_cleaned.csv")
         top_10_products = pd.read_csv("top_10_products.csv")
 
-        # Display the title and introduction
         st.title("Top 10 Most Popular and Loved Products")
         st.write("""
         Based on user reviews and sentiment analysis, here are the top 10 products that have received the most love from our customers!
         """)
 
-        # Display the top 10 products with average sentiment and review count
         for idx, row in top_10_products.iterrows():
             st.subheader(f"**{row['Product Name']}**")
-            st.write(f"**Average Sentiment:** {row['average_sentiment']:.2f}")
-            st.write(f"**Review Count:** {row['review_count']} reviews")
+            product_image = row.get('Image Link', 'default_image.jpg')
+            product_link = row.get('Product Link', '#')
 
-            # Check the correct column names for image and product link
-            product_image = row.get('Image Link', 'default_image.jpg')  # Use 'Image Link' instead of 'Image'
-            product_link = row.get('Product Link', '#')  # Use 'Product Link' instead of 'Link'
-
-            # Show the product image and link
             st.image(product_image, use_container_width=True)
             st.markdown(f"[View Product]({product_link})", unsafe_allow_html=True)
-            st.write("---")  # Divider between products
+            st.write("---")
 
     except Exception as e:
         st.error(f"Error in displaying popular products: {str(e)}")
