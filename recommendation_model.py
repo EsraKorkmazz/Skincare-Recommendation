@@ -145,31 +145,25 @@ class RecommendationEngine:
 
     def get_product_based_recommendations(self, selected_product: str, top_n: int = 20):
         try:
-            # Ensure the selected product is in the dataset
             if selected_product not in self.data['Product Name'].values:
                 return [], [], [], [], [], []
 
-            # Get the index of the selected product in the dataset
             selected_product_idx = self.data[self.data['Product Name'] == selected_product].index[0]
-
-            # Compute the similarity between the selected product and all other products in the dataset
             tfidf = TfidfVectorizer(stop_words='english')
             tfidf_matrix = tfidf.fit_transform(self.data['Combined Text'])
             
             cosine_sim = linear_kernel(tfidf_matrix[selected_product_idx:selected_product_idx+1], tfidf_matrix).flatten()
 
-            # Get the top N most similar products (excluding the selected product)
             sim_scores = list(enumerate(cosine_sim))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
             sim_scores = [s for s in sim_scores if s[0] != selected_product_idx]
             sim_scores = sim_scores[:top_n]
 
             product_indices = [i[0] for i in sim_scores]
-
-            # Filter the recommended products based on the indices
             recommended_products = self.data.iloc[product_indices]
 
-            # Process reviews and return relevant product data
+            recommended_products = recommended_products.drop_duplicates(subset=['Product Name'])
+
             processed_reviews = self._process_reviews(recommended_products)
 
             return (
@@ -184,4 +178,5 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error in product-based recommendation: {str(e)}")
             return [], [], [], [], [], []
+
 
