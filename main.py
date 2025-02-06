@@ -3,6 +3,7 @@ import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
 from chat import get_skin_recommendations
+from nltk.sentiment import SentimentIntensityAnalyzer
 
 st.set_page_config(layout="wide")
 api_key = st.secrets["skin"]["HF_API_KEY"]
@@ -19,7 +20,7 @@ recommendation_engine = RecommendationEngine(data_path)
 
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Recommendation", "Product Based Recommendation", "ChatBot", "About"],
+    options=["Home","Popular Products", "Recommendation", "Product Based Recommendation", "ChatBot", "About"],
     icons=["house", "magic", "magic", "info-circle"], 
     menu_icon="cast",
     default_index=0,
@@ -64,6 +65,39 @@ if selected == "Home":
     st.write("### While my skincare recommendation engine helps match you with the right products, this section is dedicated to sharing practical skincare tips. From building a morning routine to evening care, these tips are designed to help you achieve healthy, glowing skin.")
     st.image("images/2.png", use_container_width=True)
     st.write("### Let's dive into the essentials of skincare!")
+
+elif selected == "Popular Products":
+    try:
+        # Load cleaned data from the CSV file
+        ulta_data = pd.read_csv("data/final_data_cleaned.csv")
+        
+        # Assuming the top 10 products CSV file was generated with average sentiment and review count
+        top_10_products = pd.read_csv("top_10_products.csv")
+
+        # Display the title and introduction
+        st.title("Top 10 Most Popular and Loved Products")
+        st.write("""
+        Based on user reviews and sentiment analysis, here are the top 10 products that have received the most love from our customers!
+        """)
+
+        # Display the top 10 products with average sentiment and review count
+        for idx, row in top_10_products.iterrows():
+            st.subheader(f"**{row['Product']}**")
+            st.write(f"**Average Sentiment:** {row['average_sentiment']:.2f}")
+            st.write(f"**Review Count:** {row['review_count']} reviews")
+
+            # Assuming you have an 'Image' and 'Link' column for each product
+            product_image = row.get('Image', 'default_image.jpg')  # Replace with default if no image available
+            product_link = row.get('Link', '#')  # Replace with actual link to product page
+
+            # Show the product image and link
+            st.image(product_image, use_container_width=True)
+            st.markdown(f"[View Product]({product_link})", unsafe_allow_html=True)
+            st.write("---")  # Divider between products
+
+    except Exception as e:
+        st.error(f"Error in displaying popular products: {str(e)}")
+
 
 elif selected == "Recommendation":
     st.title("Skincare Product Recommendation")

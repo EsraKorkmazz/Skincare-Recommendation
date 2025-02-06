@@ -7,3 +7,4 @@ spacy-streamlit==1.0.6
 thinc==8.3.4
 requests==2.32.3
 openai==0.28
+nltk==3.9.1
