@@ -5,6 +5,11 @@ import requests
 import time
 from typing import Optional
 
+data_path = "data/final_data_cleaned.csv"
+data = pd.read_csv(data_path)
+data.fillna("", inplace=True)
+
+
 api_key = st.secrets["skin"]["HF_API_KEY"]
 
 class SummaryGenerator:
@@ -97,7 +102,7 @@ class RecommendationEngine:
                 processed_reviews.append(self.summary_generator._get_review_excerpt(review))
         return processed_reviews
 
-    def get_content_based_recommendations(self, product_name: str, skin_type: str, scent: str, top_n: int = 20):
+    def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
         try:
             mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
             if scent != 'All':
@@ -109,7 +114,8 @@ class RecommendationEngine:
                 return [], [], [], [], [], []
             
             recommended_products = filtered_data.head(top_n).copy()
-            processed_reviews = self._process_reviews(recommended_products)
+            processed_reviews = [self.get_review_summary(review) for review in recommended_products['Reviews']]
+            #processed_reviews = self._process_reviews(recommended_products)
 
             return (
                 recommended_products['Product Name'].tolist(),
@@ -132,7 +138,8 @@ class RecommendationEngine:
             
             recommended_products = self.data.iloc(top_n)
             recommended_products = recommended_products.drop_duplicates(subset='Product Name')
-            processed_reviews = self._process_reviews(recommended_products)
+            processed_reviews = [self.get_review_summary(review) for review in recommended_products['Reviews']]
+            #processed_reviews = self._process_reviews(recommended_products)
             
             return (
                 recommended_products['Product Name'].tolist(),

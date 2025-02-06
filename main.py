@@ -90,17 +90,21 @@ elif selected == "Recommendation":
                 st.warning("No products found matching your criteria. Please try different preferences.")
             else:
                 sample_product = filtered_products.iloc[0]['Product Name']
-                recommended_products = recommendation_engine.get_content_based_recommendations(
+                recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries = recommendation_engine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40
                 )
+                #sample_product = filtered_products.iloc[0]['Product Name']
+                #recommended_products = recommendation_engine.get_content_based_recommendations(
+                #   sample_product, skin_type, scent, top_n=40
+                #)
                 
-                if not any(recommended_products):
+                if not any(recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries):
                     st.warning("No recommendations found. Please try different preferences.")
                 else:
                     progress_bar.progress(75)
                     status_text.text("Preparing your personalized recommendations...")
                     
-                    names, brands, images, links, ease_of_use, summaries = recommended_products
+                    names, brands, images, links, ease_of_use, summaries = recommended_names, recommended_brands, recommended_images, recommended_links, recommended_ease_of_use, recommended_summaries
                     
                     BATCH_SIZE = 3
                     for i in range(0, len(names), BATCH_SIZE):
@@ -110,15 +114,15 @@ elif selected == "Recommendation":
                             idx = i + j
                             if idx < len(names):
                                 with col:
-                                    st.markdown(f"### {brands[idx]}")
+                                    st.markdown(f"### {recommended_brands[idx]}")
                                     st.image(images[idx], 
                                         caption=names[idx], 
                                          use_container_width=True)
                                     with st.expander("Product Details"):
-                                        st.write(f"**Ease of Use:** {ease_of_use[idx]}")
+                                        st.write(f"**Ease of Use:** {recommended_ease_of_use[idx]}")
                                         st.write("**Product Summary:**")
                                         st.write(summaries[idx])
-                                        st.markdown(f"[View Product]({links[idx]})")
+                                        st.markdown(f"[View Product]({recommended_links[idx]})")
                 
                 progress_bar.progress(100)
                 status_text.empty()
