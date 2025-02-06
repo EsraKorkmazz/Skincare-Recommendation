@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from recommendation_model import RecommendationEngine
 from streamlit_option_menu import option_menu
+from chat import get_skin_recommendations
 
 st.set_page_config(layout="wide")
 api_key = st.secrets["skin"]["HF_API_KEY"]
@@ -18,7 +19,7 @@ recommendation_engine = RecommendationEngine(data_path)
 
 selected = option_menu(
     menu_title=None,
-    options=["Home", "Recommendation", "Product Based Recommendation", "About"],
+    options=["Home", "Recommendation", "Product Based Recommendation", "ChatBot", "About"],
     icons=["house", "magic", "magic", "info-circle"], 
     menu_icon="cast",
     default_index=0,
@@ -47,6 +48,7 @@ selected = option_menu(
         }
     }
 )
+
 
 if selected == "Home":
     st.title("Welcome to Skin Pro! Your Personalized Skincare Assistant.")
@@ -165,6 +167,21 @@ elif selected == "Product Based Recommendation":
             
             progress_bar.progress(100)
             status_text.empty()
+
+elif selected == "ChatBot":
+    query = st.text_input("Enter your skin care needs (e.g., 'products for dry skin with anti-aging properties')")
+
+    if query:
+        with st.spinner("Fetching skin care product recommendations..."):
+            recommendations = get_skin_recommendations(query)
+        
+        if recommendations:
+            st.write("Here are some skin care product recommendations based on your needs:")
+            for product in recommendations:
+                st.write(f"- {product}")
+        else:
+            st.warning("No recommendations found.")
+
 
 elif selected == "About":
     st.title("About Skin Pro")
