@@ -1,11 +1,11 @@
-Product Name,average_sentiment,review_count
-Tinted Lip Balm,0.9999666666666668,3
-Vitamin C Serum,0.9999333333333333,3
-Facial Radiance Niacinamide Dark Spot Serum,1.0,2
-Cleansing Balm,0.99995,2
-Hydrating Lip Balm,0.99995,2
-Eye Cream,0.9999,2
-Moisture Surge 100H Auto-Replenishing Hydrator Gel Moisturizer with Hyaluronic Acid,0.9999,2
-PLAY Everyday Lotion SPF 50 with Sunflower Extract PA++++,0.9999,2
-Thermal Spring Water,0.9999,2
-Advanced Night Repair Multi-Recovery Complex Serum,0.99985,2
+Product Name,Image Link,Product Link,average_sentiment,review_count
+Advanced Night Repair Multi-Recovery Complex Serum,https://media.ulta.com/i/ulta/2568523?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/advanced-night-repair-multi-recovery-complex-serum-pimprod2016818?sku=2568523#reviews,0.99985,2
+Mineral Mattescreen SPF 40,https://media.ulta.com/i/ulta/2589388?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/mineral-mattescreen-spf-40-pimprod2029941?sku=2589388#reviews,0.9996,2
+0.3% Retinol Complex Face Serum with Peptides,https://media.ulta.com/i/ulta/2617638?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/03-retinol-complex-face-serum-with-peptides-pimprod2042090?sku=2617638#reviews,1.0,1
+1-2-3 Glow! Bestsellers Kit,https://media.ulta.com/i/ulta/2606977?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/1-2-3-glow-bestsellers-kit-pimprod2037911?sku=2606977#reviews,1.0,1
+100% Natural Shea Lip Balm 2-Pack,https://media.ulta.com/i/ulta/2565464?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/100-natural-shea-lip-balm-2-pack-pimprod2005917?sku=2565464#reviews,1.0,1
+100% Virgin Coconut Oil Daily Hydration Foaming Facial Wash,https://media.ulta.com/i/ulta/2548810?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/100-virgin-coconut-oil-daily-hydration-foaming-facial-wash-pimprod2006120?sku=2548810#reviews,1.0,1
+10balm Soothing Cream for Dry & Sensitive Skin,https://media.ulta.com/i/ulta/2551503?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/10balm-soothing-cream-dry-sensitive-skin-pimprod2006897?sku=2551503#reviews,1.0,1
+16% Pure Vitamin C Brightening Serum,https://media.ulta.com/i/ulta/2625745?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/16-pure-vitamin-c-brightening-serum-pimprod2046283?sku=2625745#reviews,1.0,1
+2 HR Express Self Tanning Mousse Medium,https://media.ulta.com/i/ulta/2522594?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/2-hr-express-self-tanning-mousse-medium-pimprod2000717?sku=2522594#reviews,1.0,1
+"2% AHA Exfoliating, Smoothing and Pore Refining Toner",https://media.ulta.com/i/ulta/2615539?w=1080&h=1080&fmt=auto,https://www.ulta.com/p/2-aha-exfoliating-smoothing-pore-refining-toner-pimprod2041559?sku=2615539#reviews,1.0,1
