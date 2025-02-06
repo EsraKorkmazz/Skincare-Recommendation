@@ -108,7 +108,7 @@ class RecommendationEngine:
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
-            recommended_products = filtered_data.head(top_n)
+            recommended_products = filtered_data.head(top_n).copy()
             processed_reviews = self._process_reviews(recommended_products)
 
             return (
@@ -123,6 +123,7 @@ class RecommendationEngine:
         except Exception as e:
             st.error(f"Error in recommendation generation: {str(e)}")
             return [], [], [], [], [], []
+
 
     def get_product_based_recommendations(self, selected_product: str, top_n: int = 20):
         try:
