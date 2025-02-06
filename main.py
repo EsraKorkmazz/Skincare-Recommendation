@@ -71,7 +71,7 @@ elif selected == "Popular Products":
         ulta_data = pd.read_csv("data/final_data_cleaned.csv")
         top_10_products = pd.read_csv("top_10_products.csv")
 
-        st.title("Top 10 Most Popular and Loved Products")
+        st.title("Top 20 Most Popular and Loved Products")
         st.write("""
         Based on user reviews and sentiment analysis, here are the top 10 products that have received the most love from our customers!
         """)
