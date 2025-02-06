@@ -6,6 +6,7 @@ from streamlit_option_menu import option_menu
 st.set_page_config(layout="wide")
 api_key = st.secrets["skin"]["HF_API_KEY"]
 
+@st.cache_data
 def load_data():
     data_path = "data/final_data_cleaned.csv"
     data = pd.read_csv(data_path)
@@ -88,7 +89,6 @@ elif selected == "Recommendation":
             if filtered_products.empty:
                 st.warning("No products found matching your criteria. Please try different preferences.")
             else:
-                
                 sample_product = filtered_products.iloc[0]['Product Name']
                 recommended_products = recommendation_engine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40

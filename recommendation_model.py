@@ -97,21 +97,20 @@ class RecommendationEngine:
                 processed_reviews.append(self.summary_generator._get_review_excerpt(review))
         return processed_reviews
 
-    def get_content_based_recommendations(self, product_name, skin_type, scent, top_n=20):
+    def get_content_based_recommendations(self, product_name: str, skin_type: str, scent: str, top_n: int = 20):
         try:
             mask = self.data['Skin Type Compatibility'].str.contains(skin_type, case=False, na=False)
-            mask &= self.data['Product Name'].str.contains(product_name, case=False, na=False)
             if scent != 'All':
                 mask &= self.data['Scent'].str.contains(scent, case=False, na=False)
             
-            filtered_data = self.data[mask].drop_duplicates(subset=['Product Name']).reset_index(drop=True)
-
+            filtered_data = self.data[mask].drop_duplicates(subset=['Product Name'])
+            
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
             recommended_products = filtered_data.head(top_n)
-            processed_reviews = [self.get_review_summary(review) for review in recommended_products['Reviews']]
-
+            processed_reviews = self._process_reviews(recommended_products)
+            
             return (
                 recommended_products['Product Name'].tolist(),
                 recommended_products['Product Brand'].tolist(),
@@ -125,16 +124,14 @@ class RecommendationEngine:
             st.error(f"Error in recommendation generation: {str(e)}")
             return [], [], [], [], [], []
 
-
     def get_product_based_recommendations(self, selected_product: str, top_n: int = 20):
         try:
             if selected_product not in self.data['Product Name'].values:
                 return [], [], [], [], [], []
             
-            recommended_products = self.data.iloc(top_n)
+            recommended_products = self.data.head(top_n)
             recommended_products = recommended_products.drop_duplicates(subset='Product Name')
-            processed_reviews = [self.get_review_summary(review) for review in recommended_products['Reviews']]
-            #processed_reviews = self._process_reviews(recommended_products)
+            processed_reviews = self._process_reviews(recommended_products)
             
             return (
                 recommended_products['Product Name'].tolist(),
@@ -147,4 +144,4 @@ class RecommendationEngine:
             
         except Exception as e:
             st.error(f"Error in product-based recommendation: {str(e)}")
-            return [], [], [], [], [], []
+            return [], [], [], [], [], []     
