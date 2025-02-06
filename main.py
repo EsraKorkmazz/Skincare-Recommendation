@@ -75,20 +75,21 @@ elif selected == "Popular Products":
         st.write("""
         Based on user reviews and sentiment analysis, here are the top 10 products that have received the most love from our customers!
         """)
-
+        num_columns = 3  
+        columns = st.columns(num_columns)
         for idx, row in top_10_products.iterrows():
-            st.subheader(f"**{row['Product Name']}**")
-            product_image = row.get('Image Link', 'default_image.jpg')
-            product_link = row.get('Product Link', '#')
+            column_idx = idx % num_columns 
+            with columns[column_idx]:
+                st.subheader(f"**{row['Product Name']}**")
+                product_image = row.get('Image Link', 'default_image.jpg')
+                product_link = row.get('Product Link', '#')
 
-            st.image(product_image, use_container_width=True)
-            st.markdown(f"[View Product]({product_link})", unsafe_allow_html=True)
-            st.write("---")
+                st.image(product_image, use_container_width=True)
+                st.markdown(f"[View Product]({product_link})", unsafe_allow_html=True)
+                st.write("---")
 
     except Exception as e:
         st.error(f"Error in displaying popular products: {str(e)}")
-
-
 
 elif selected == "Recommendation":
     st.title("Skincare Product Recommendation")
@@ -118,7 +119,7 @@ elif selected == "Recommendation":
             else:
                 sample_product = filtered_products.iloc[0]['Product Name']
                 recommended_products = recommendation_engine.get_content_based_recommendations(
-                    sample_product, skin_type, scent, top_n=40
+                    sample_product, skin_type, scent, top_n=43
                 )
                 if not any(recommended_products):
                     st.warning("No recommendations found. Please try different preferences.")
@@ -164,7 +165,7 @@ elif selected == "Product Based Recommendation":
             progress_bar.progress(25)
             recommended_products = recommendation_engine.get_product_based_recommendations(
                 selected_product,
-                top_n=40
+                top_n=43
             )
             
             if not any(recommended_products):
