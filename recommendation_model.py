@@ -109,8 +109,8 @@ class RecommendationEngine:
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
-            recommended_products = filtered_data.head(top_n).copy()
-            processed_reviews = [self.summary_generator.get_summary(review) if self.summary_generator else self.summary_generator._get_review_excerpt(review) for review in recommended_products['Reviews']]
+            recommended_products = filtered_data.head(top_n)
+            processed_reviews = [self.get_review_summary(review) for review in recommended_products['Reviews']]
 
             return (
                 recommended_products['Product Name'].tolist(),
