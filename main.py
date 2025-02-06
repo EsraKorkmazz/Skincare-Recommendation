@@ -94,11 +94,6 @@ elif selected == "Recommendation":
                 recommended_products = recommendation_engine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40
                 )
-
-                # Optionally, you can uncomment the next line to debug the list lengths:
-                st.write(f"List Lengths: {[len(lst) for lst in recommended_products]}")
-
-                # Check if recommendations were found based on the returned lists
                 if not any(recommended_products):
                     st.warning("No recommendations found. Please try different preferences.")
                 else:
