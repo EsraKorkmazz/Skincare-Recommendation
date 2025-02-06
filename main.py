@@ -90,7 +90,6 @@ elif selected == "Recommendation":
                 st.warning("No products found matching your criteria. Please try different preferences.")
             else:
                 sample_product = filtered_products.iloc[0]['Product Name']
-                # Call the recommendation function once and store the result
                 recommended_products = recommendation_engine.get_content_based_recommendations(
                     sample_product, skin_type, scent, top_n=40
                 )
