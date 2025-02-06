@@ -108,6 +108,8 @@ class RecommendationEngine:
             if filtered_data.empty:
                 return [], [], [], [], [], []
             
+            filtered_data = filtered_data.reset_index(drop=True) #added
+            
             recommended_products = filtered_data.head(top_n)
             processed_reviews = self._process_reviews(recommended_products)
             
